@@ -3,6 +3,8 @@ package io.allteran.letschatbackend.service;
 import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.dto.AuthRequest;
 import io.allteran.letschatbackend.dto.AuthResponse;
+import io.allteran.letschatbackend.dto.UserVerificationRequest;
+import io.allteran.letschatbackend.dto.UserVerificationResponse;
 import io.allteran.letschatbackend.exception.TokenException;
 import io.allteran.letschatbackend.security.JwtUtil;
 import io.jsonwebtoken.JwtException;
@@ -19,6 +21,10 @@ public class AuthService {
     private String MESSAGE_AUTH_FAILED;
     @Value("${message.auth.success}")
     private String MESSAGE_AUTH_SUCCESS;
+    @Value("${verification.message.success}")
+    private String MESSAGE_USER_VERIFICATION_SUCCESS;
+    @Value("${verification.message.fail}")
+    private String MESSAGE_USER_VERIFICATION_FAIL;
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -37,32 +43,15 @@ public class AuthService {
         return new AuthResponse(request.getLogin(), token, MESSAGE_AUTH_SUCCESS);
     }
 
-//    public Mono<AuthResponse> login(String login, String password) {
-//        return userService.findByEmail(login)
-//                .singleOptional()
-//                .flatMap(userOptional -> {
-//                    if(userOptional.isEmpty()) {
-//                        return Mono.just(new AuthResponse(login, null, MESSAGE_AUTH_FAILED));
-//                    }
-//                    User user = userOptional.get();
-//                    if(!passwordEncoder.matches(password, user.getPassword())) {
-//                        return Mono.just(new AuthResponse(login, null, MESSAGE_AUTH_FAILED));
-//                    }
-//
-//                    var token = jwtUtil.generateToken(user);
-//                    return Mono.just(new AuthResponse(login, token, MESSAGE_AUTH_SUCCESS));
-//                });
-//    }
-//
-//    public Mono<String> validateToken(String token) {
-//        try{
-//
-//            return jwtUtil.validateToken(token) ? Mono.just(MESSAGE_TOKEN_VALID)
-//                    : Mono.error(new TokenException(MESSAGE_TOKEN_INVALID));
-//        } catch (JwtException jwtException) {
-//            return Mono.error(new TokenException(MESSAGE_TOKEN_INVALID));
-//        }
-//    }
+    public User registerUser(User user) {
+        return userService.createUser(user);
+    }
+
+    public UserVerificationResponse verifyUser(UserVerificationRequest request) {
+        return (userService.verifyUser(request.getLogin(), request.getCode()))
+                ? new UserVerificationResponse(request.getLogin(), MESSAGE_USER_VERIFICATION_SUCCESS)
+                : new UserVerificationResponse(request.getLogin(), MESSAGE_USER_VERIFICATION_FAIL);
+    }
 
     public boolean validateToken(String token) {
         try {

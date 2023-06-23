@@ -1,8 +1,8 @@
 package io.allteran.letschatbackend.controller;
 
-import io.allteran.letschatbackend.dto.AuthRequest;
-import io.allteran.letschatbackend.dto.AuthResponse;
+import io.allteran.letschatbackend.dto.*;
 import io.allteran.letschatbackend.service.AuthService;
+import io.allteran.letschatbackend.util.EntityMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
@@ -33,15 +33,16 @@ public class AuthController {
         return authService.validateToken(token) ? ResponseEntity.ok(MESSAGE_TOKEN_VALID) : ResponseEntity.status(HttpStatus.FORBIDDEN).body(MESSAGE_TOKEN_INVALID);
     }
 
-//    @PostMapping("/login")
-//    public Mono<AuthResponse> login(@RequestBody AuthRequest request) {
-//        return authService.login(request.getLogin(), request.getPassword());
-//    }
-//
-//    //in case with validation token from API more important for us is to receive bad response, so we should catch that type of cases
-//    @PostMapping("/validateToken")
-//    public Mono<String> validateToken(@Param("token") String token) {
-//        return authService.validateToken(token);
-//    }
+    @PostMapping("/signUp")
+    public ResponseEntity<UserDto> singUp(@RequestBody UserDto body) {
+        return ResponseEntity.ok(EntityMapper.convertToDto(authService.registerUser(EntityMapper.convertToEntity(body))));
+    }
+
+    @PostMapping("/userVerify")
+    public ResponseEntity<UserVerificationResponse> verifyUser(@RequestBody UserVerificationRequest request) {
+        return ResponseEntity.ok(authService.verifyUser(request));
+    }
+
+
 
 }
