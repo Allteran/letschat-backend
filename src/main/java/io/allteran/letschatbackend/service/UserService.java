@@ -1,11 +1,11 @@
 package io.allteran.letschatbackend.service;
 
+import io.allteran.letschatbackend.domain.Role;
 import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.domain.UserVerificationCode;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.repo.UserRepo;
 import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,7 +56,7 @@ public class UserService implements UserDetailsService {
         user.setPasswordConfirm("");
         user.setCreationDate(LocalDateTime.now());
         user.setActive(false);
-
+        user.setRoles(Set.of(Role.USER));
         UserVerificationCode verificationCode = verificationCodeService.createCode(user.getEmail());
         try {
             emailService.sendVerificationEmail(verificationCode, user.getUsername());

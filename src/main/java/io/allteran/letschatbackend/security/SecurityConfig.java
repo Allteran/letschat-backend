@@ -43,7 +43,7 @@ public class SecurityConfig {
                 .formLogin().disable()
                 .httpBasic().disable()
                 .authenticationManager(authManager)
-                .authorizeHttpRequests(authz -> authz.requestMatchers("/auth/**","/auth/signUp", "/tsst/**", "/favicon.ico").permitAll())
+                .authorizeHttpRequests(authz -> authz.requestMatchers("/auth/**","/api-docs/**","swagger-doc/**", "/tsst/**", "/favicon.ico").permitAll())
                 .build();
     }
 
