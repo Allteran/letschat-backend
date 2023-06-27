@@ -46,20 +46,4 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz -> authz.requestMatchers("/auth/**","/api-docs/**","swagger-doc/**", "/tsst/**", "/favicon.ico").permitAll())
                 .build();
     }
-
-    public CorsConfigurationSource createCorsConfigSource() {
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin(ALLOWED_ORIGIN);
-        config.addAllowedMethod("OPTIONS");
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("DELETE");
-        config.addAllowedHeader("*");
-
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
-
 }

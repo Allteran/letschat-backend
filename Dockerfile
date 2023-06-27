@@ -1,11 +1,12 @@
-FROM eclipse-temurin:17-jdk-jammy
+FROM maven:3.9.0-eclipse-temurin-17-alpine AS build
+COPY . .
+RUN mvn clean package -DskipTests
 
-WORKDIR /app
-
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:resolve
-
-COPY src ./src
-
-CMD ["./mvnw", "spring-boot:run"]
+#
+# Package state
+#
+FROM openjdk:19
+COPY --from=build /target/letschat-backend-0.0.1-SNAPSHOT.jar letschat-backend-0.0.1-SNAPSHOT.jar
+# ENV PORT=9200
+EXPOSE 8200
+ENTRYPOINT ["java", "-jar", "letschat-backend-0.0.1-SNAPSHOT.jar"]
