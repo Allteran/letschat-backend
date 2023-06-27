@@ -1,4 +1,4 @@
-package io.allteran.letschatbackend.ws;
+package io.allteran.letschatbackend.controller.ws;
 
 import io.allteran.letschatbackend.domain.Message;
 import io.allteran.letschatbackend.dto.MessageDto;

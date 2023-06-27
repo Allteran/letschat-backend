@@ -1,0 +1,19 @@
+version: '3.1'
+
+services:
+  letschat_backend:
+    container_name: 'lc_backend_api'
+    image: 'allteran/letschat-backend:v.0.1'
+    ports:
+      - 8200:8200
+    depends_on:
+    - mongodb
+
+  mongodb:
+    container_name: 'lc_backend_mongo_db'
+    restart: always
+    image: mongo
+    volumes:
+      - ~/mongodata:/data/db
+    ports:
+      - 27017:27017
