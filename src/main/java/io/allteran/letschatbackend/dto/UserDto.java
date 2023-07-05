@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
-@Schema(description = "Entity uses to interact between backend and frontend")
+@Schema(description = "DTO. Entity uses to interact between backend and frontend")
 public class UserDto {
     private String id;
     @NotBlank

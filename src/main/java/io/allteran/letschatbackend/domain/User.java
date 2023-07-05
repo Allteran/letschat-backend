@@ -3,7 +3,9 @@ package io.allteran.letschatbackend.domain;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,6 +17,8 @@ import java.util.Collection;
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Document(value = "chat_user")
 @Schema(description = "Entity to describe user as it implemented in database. ONLY FOR BACKEND PURPOSES")
 public class User implements UserDetails {

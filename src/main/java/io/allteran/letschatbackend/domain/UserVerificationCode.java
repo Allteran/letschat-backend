@@ -4,13 +4,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Document("user_verification_code")
 @Schema(description = "Entity to describe UserVerificationCode as it implemented in database. ONLY FOR BACKEND PURPOSES")
 public class UserVerificationCode {
@@ -24,3 +28,5 @@ public class UserVerificationCode {
     private int attemptsCount;
     private Date creationDate;
 }
+
+

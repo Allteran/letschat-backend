@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 
-@SpringBootApplication(exclude={MongoAutoConfiguration.class})
+@SpringBootApplication
 public class LetschatBackendApplication {
 
 	public static void main(String[] args) {

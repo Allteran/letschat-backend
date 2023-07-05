@@ -4,10 +4,12 @@ import io.allteran.letschatbackend.domain.Role;
 import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.domain.UserVerificationCode;
 import io.allteran.letschatbackend.exception.EntityFieldException;
+import io.allteran.letschatbackend.exception.MailingException;
+import io.allteran.letschatbackend.exception.NotFoundException;
+import io.allteran.letschatbackend.exception.UserStateException;
 import io.allteran.letschatbackend.repo.UserRepo;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,9 +25,6 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
-    @Value("${spring.mail.username}")
-    private String EMAIL;
-
     private final UserRepo repo;
     private final PasswordEncoder passwordEncoder;
     private final UserVerificationCodeService verificationCodeService;
@@ -39,6 +38,23 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public User createUserWithGoogle(User user) {
+        if(user.getName().isBlank() || user.getName().isEmpty()) {
+            throw new EntityFieldException("User creation error: name is required");
+        }
+        User existedUser = findByEmail(user.getEmail());
+        if(existedUser != null) {
+            throw new EntityFieldException("User creation error: email must be unique");
+        }
+        user.setPassword("");
+        user.setPasswordConfirm("");
+        user.setCreationDate(LocalDateTime.now());
+        user.setActive(true);
+        user.setRoles(Set.of(Role.USER));
+        return repo.save(user);
+    }
+
+    @Transactional
     public User createUser(User user) {
         if(!user.getPassword().equals(user.getPasswordConfirm())) {
             throw new EntityFieldException("User creation error: passwords don't match");
@@ -49,7 +65,11 @@ public class UserService implements UserDetailsService {
         if(!emailValidation(user.getEmail())) {
             throw new EntityFieldException("User creation error: email doesn't match the pattern");
         }
-        if(findByEmail(user.getEmail()) != null) {
+        User existedUser = findByEmail(user.getEmail());
+        if(existedUser != null) {
+            if(!existedUser.isActive()) {
+                throw new UserStateException("User is not verified");
+            }
             throw new EntityFieldException("User creation error: email must be unique");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -57,13 +77,18 @@ public class UserService implements UserDetailsService {
         user.setCreationDate(LocalDateTime.now());
         user.setActive(false);
         user.setRoles(Set.of(Role.USER));
-        UserVerificationCode verificationCode = verificationCodeService.createCode(user.getEmail());
+
         try {
-            emailService.sendVerificationEmail(verificationCode, user.getUsername());
+            sendVerificationCode(user.getEmail());
             return repo.save(user);
         } catch (MessagingException e) {
-            throw new RuntimeException(e);
+            throw new MailingException(e.getMessage());
         }
+    }
+
+    public void sendVerificationCode(String email) throws MessagingException {
+        UserVerificationCode code = verificationCodeService.createCode(email);
+        emailService.sendVerificationEmail(code, email);
     }
 
     @Transactional
@@ -80,6 +105,21 @@ public class UserService implements UserDetailsService {
     private boolean emailValidation(String email) {
         Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(email);
         return matcher.find();
+    }
+
+    @Transactional
+    public boolean changePasswordFromReset(String userLogin, String password, String passwordConfirm) throws NotFoundException, EntityFieldException{
+        User user = findByEmail(userLogin);
+        if(user == null) {
+            throw new NotFoundException("User not found");
+        }
+        if(!password.equals(passwordConfirm)) {
+            throw new EntityFieldException("Passwords don't match");
+        }
+
+        user.setPassword(passwordEncoder.encode(password));
+        repo.save(user);
+        return true;
     }
 
     public User findByEmail(String email) {
