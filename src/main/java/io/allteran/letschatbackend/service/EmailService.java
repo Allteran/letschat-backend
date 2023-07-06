@@ -39,14 +39,13 @@ public class EmailService {
     private final JavaMailSender mailSender;
 
     @Async
-    public void sendVerificationEmail(UserVerificationCode verificationCode, String username) throws MessagingException {
+    public void sendVerificationEmail(UserVerificationCode verificationCode, String username) throws MessagingException, IOException {
 
         StringBuilder builder = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(VERIFICATION_CONTENT_LOCATION.getInputStream()));){
             reader.lines().forEach(builder::append);
-
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IOException(e);
         }
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message);

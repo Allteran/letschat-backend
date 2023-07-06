@@ -4,7 +4,7 @@ import io.allteran.letschatbackend.domain.PasswordResetToken;
 import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.dto.*;
 import io.allteran.letschatbackend.exception.EntityFieldException;
-import io.allteran.letschatbackend.exception.MailingException;
+import io.allteran.letschatbackend.exception.InternalException;
 import io.allteran.letschatbackend.exception.NotFoundException;
 import io.allteran.letschatbackend.exception.UserStateException;
 import io.allteran.letschatbackend.security.JwtUtil;
@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +79,7 @@ public class AuthService {
         } catch (UserStateException ex) {
             response.setMessage(ex.getMessage());
             response.setStatus(AuthResponse.Status.USER_STATE_ERROR);
-        } catch (MailingException ex) {
+        } catch (InternalException ex) {
             response.setMessage(ex.getMessage());
             response.setStatus(AuthResponse.Status.INTERNAL_ERROR);
         }
@@ -106,7 +108,7 @@ public class AuthService {
         try {
             userService.sendVerificationCode(email);
             return new UserVerificationResponse(email, MESSAGE_VERIFICATION_RESENT_SUCCESSFULLY);
-        } catch (MessagingException ex) {
+        } catch (MessagingException | IOException ex) {
             return new UserVerificationResponse(email, ex.getMessage());
         }
     }

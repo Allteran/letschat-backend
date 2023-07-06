@@ -1,5 +1,5 @@
-## OkTalk Project: backend (letschat-backend)
-Backend side of chat application for [Team Challenge](teamchallenge.io) - OkTalk  
+## OkToTalk Project: backend (letschat-backend)
+Backend side of chat application for [Team Challenge](teamchallenge.io) - OkToTalk  
 ### Development tech stack:
 - Spring Boot 3.1
 - MongoDB as main database
