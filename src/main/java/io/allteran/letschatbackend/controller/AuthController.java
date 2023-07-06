@@ -133,7 +133,7 @@ public class AuthController {
     }
 
 
-    @Operation(summary = "Creates request to change password", description = "Current methods checks given data (user email) and checks if there such user in system and creates link to reset the password and sends it to users email")
+    @Operation(summary = "Creates request to change password", description = "Current methods checks given data (user email) and checks if there such user in system and creates link to reset the password and sends it to users email.")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -147,7 +147,8 @@ public class AuthController {
             ),
             @ApiResponse(
                     responseCode = "404",
-                    description = "Fail. User with given email not found"
+                    description = "Fail. User with given email not found",
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = String.class))}
             )
     })
     @PostMapping("/resetPassword/request")
