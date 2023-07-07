@@ -1,36 +1,58 @@
 package io.allteran.letschatbackend.security;
 
-import lombok.RequiredArgsConstructor;
+import io.allteran.letschatbackend.domain.Role;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@EnableWebSecurity
+//@EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
     @Value("${url.frontend}")
     private String ALLOWED_ORIGIN;
 
+    public static final String[] ENDPOINTS_WHITELIST = {
+            "/auth/**",
+            "/api-docs/**",
+            "swagger-doc/**",
+            "/forgot-password/**",
+            "/favicon.ico"
+    };
+
+    public static final String[] ENDPOINTS_ADMIN = {
+            "/api/v1/*/protected/**"
+    };
+
     private final JwtAuthEntryPoint authEntryPoint;
     private final AuthManager authManager;
+    private final JwtRequestFilter jwtRequestFilter;
 
-    @Bean
-    public PasswordEncoder passwordEncoder () {
-        return new BCryptPasswordEncoder();
+    @Autowired
+    public SecurityConfig(JwtAuthEntryPoint authEntryPoint, AuthManager authManager, JwtRequestFilter jwtRequestFilter) {
+        this.authEntryPoint = authEntryPoint;
+        this.authManager = authManager;
+        this.jwtRequestFilter = jwtRequestFilter;
     }
+
+
 
     @Bean
     public SecurityFilterChain securityWebFilterChain(HttpSecurity httpSecurity) throws Exception {
-        return httpSecurity
+        httpSecurity
+                //IMPORTANT: if you want to separate your URL with different access - don't forget to use securityMatcher to inform Spring
+                //on what URL pattern you want to use next lines of config
+                .securityMatcher("/**")
+                .authorizeHttpRequests((authz) ->
+                        authz.requestMatchers(ENDPOINTS_WHITELIST).permitAll()
+                                .requestMatchers(ENDPOINTS_ADMIN).hasAuthority(Role.ADMIN.getAuthority())
+                                .anyRequest().hasAuthority(Role.USER.getAuthority()))
                 .cors(Customizer.withDefaults())
                 .exceptionHandling()
                 .authenticationEntryPoint(authEntryPoint)
@@ -38,8 +60,18 @@ public class SecurityConfig {
                 .csrf().disable()
                 .formLogin().disable()
                 .httpBasic().disable()
-                .authenticationManager(authManager)
-                .authorizeHttpRequests(authz -> authz.requestMatchers("/auth/**","/api-docs/**","swagger-doc/**", "/tsst/**", "/favicon.ico").permitAll())
-                .build();
+                .authenticationManager(authManager);
+        httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+//                .authorizeHttpRequests(authz -> authz.anyRequest().authenticated());
+        return httpSecurity.build();
     }
+
+//    @Bean
+//    public SecurityFilterChain urlFilterChain(HttpSecurity httpSecurity) throws Exception {
+//        httpSecurity
+//                .authorizeHttpRequests(authz -> authz.requestMatchers("/auth/**","/api-docs/**","swagger-doc/**", "/forgot-password/**", "/favicon.ico").permitAll()
+//                        .anyRequest().authenticated());
+//        return httpSecurity.build();
+//    }
 }

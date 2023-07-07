@@ -15,8 +15,10 @@ import java.io.Serializable;
 public class JwtAuthEntryPoint implements AuthenticationEntryPoint, Serializable {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        if(response.getStatus() == HttpServletResponse.SC_UNAUTHORIZED) {
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
+        int statusCode = response.getStatus();
+        if(authException != null) {
+            authException.printStackTrace();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, authException.getMessage());
         }
     }
 }
