@@ -1,7 +1,7 @@
 package io.allteran.letschatbackend.controller;
 
 import io.allteran.letschatbackend.dto.ChatCategoryDto;
-import io.allteran.letschatbackend.dto.GeneralResponse;
+import io.allteran.letschatbackend.dto.payload.GeneralResponse;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.NotFoundException;
 import io.allteran.letschatbackend.service.ChatCategoryService;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;

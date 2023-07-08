@@ -1,8 +1,10 @@
 package io.allteran.letschatbackend.controller;
 
 import io.allteran.letschatbackend.dto.*;
-import io.allteran.letschatbackend.exception.EntityFieldException;
-import io.allteran.letschatbackend.exception.NotFoundException;
+import io.allteran.letschatbackend.dto.payload.AuthRequest;
+import io.allteran.letschatbackend.dto.payload.AuthResponse;
+import io.allteran.letschatbackend.dto.payload.UserVerificationRequest;
+import io.allteran.letschatbackend.dto.payload.UserVerificationResponse;
 import io.allteran.letschatbackend.service.AuthService;
 import io.allteran.letschatbackend.util.EntityMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;

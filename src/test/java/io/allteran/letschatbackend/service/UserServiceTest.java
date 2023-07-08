@@ -4,9 +4,11 @@ import io.allteran.letschatbackend.domain.Role;
 import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.domain.UserVerificationCode;
 import io.allteran.letschatbackend.exception.EntityFieldException;
+import io.allteran.letschatbackend.exception.InternalException;
 import io.allteran.letschatbackend.exception.UserStateException;
 import io.allteran.letschatbackend.repo.UserRepo;
 import jakarta.mail.MessagingException;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -161,6 +164,38 @@ class UserServiceTest {
         Assertions.assertNull(notCreatedUser[0], "Creation did not succeed, user is null");
     }
 
-    //TODO: handle messaging exception thrown from email service
+    @SneakyThrows
+    @Test
+    void createUser_shouldThrow_mailingException() {
+        //given
+        User givenUser = new User(
+                "testId",
+                "testName",
+                "testEmail@mail.com",
+                "testPassword",
+                "testPassword",
+                Set.of(Role.USER),
+                true,
+                LocalDateTime.now()
+        );
+        UserVerificationCode code = new UserVerificationCode(
+                "testCodeId",
+                givenUser.getEmail(),
+                111111,
+                0,
+                new Date()
+        );
+        //when
+        Mockito.when(verificationCodeService.createCode(givenUser.getEmail())).thenReturn(code);
+        Mockito.doThrow(MessagingException.class).when(emailService).sendVerificationEmail(code, givenUser.getUsername());
+
+        //then
+        final User[] notCreatedUser = new User[1];
+        Assertions.assertThrows(InternalException.class, () -> {
+            notCreatedUser[0] = userService.createUser(givenUser);
+        }, "User not created because of internal exception");
+        Assertions.assertNull(notCreatedUser[0], "Creation did not succeed, user is null");
+    }
+
 
 }

@@ -1,6 +1,6 @@
 package io.allteran.letschatbackend.controller;
 
-import io.allteran.letschatbackend.dto.ChangePasswordRequest;
+import io.allteran.letschatbackend.dto.payload.ChangePasswordRequest;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.NotFoundException;
 import io.allteran.letschatbackend.service.PasswordResetService;

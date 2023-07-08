@@ -1,7 +1,7 @@
 package io.allteran.letschatbackend.service;
 
 import io.allteran.letschatbackend.domain.PasswordResetToken;
-import io.allteran.letschatbackend.dto.ChangePasswordRequest;
+import io.allteran.letschatbackend.dto.payload.ChangePasswordRequest;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.NotFoundException;
 import jakarta.mail.MessagingException;

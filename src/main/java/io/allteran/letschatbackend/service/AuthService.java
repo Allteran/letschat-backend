@@ -1,11 +1,12 @@
 package io.allteran.letschatbackend.service;
 
-import io.allteran.letschatbackend.domain.PasswordResetToken;
 import io.allteran.letschatbackend.domain.User;
-import io.allteran.letschatbackend.dto.*;
+import io.allteran.letschatbackend.dto.payload.AuthRequest;
+import io.allteran.letschatbackend.dto.payload.AuthResponse;
+import io.allteran.letschatbackend.dto.payload.UserVerificationRequest;
+import io.allteran.letschatbackend.dto.payload.UserVerificationResponse;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.InternalException;
-import io.allteran.letschatbackend.exception.NotFoundException;
 import io.allteran.letschatbackend.exception.UserStateException;
 import io.allteran.letschatbackend.security.JwtUtil;
 import io.jsonwebtoken.JwtException;
