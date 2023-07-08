@@ -62,16 +62,7 @@ public class SecurityConfig {
                 .httpBasic().disable()
                 .authenticationManager(authManager);
         httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
-
-//                .authorizeHttpRequests(authz -> authz.anyRequest().authenticated());
         return httpSecurity.build();
     }
 
-//    @Bean
-//    public SecurityFilterChain urlFilterChain(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity
-//                .authorizeHttpRequests(authz -> authz.requestMatchers("/auth/**","/api-docs/**","swagger-doc/**", "/forgot-password/**", "/favicon.ico").permitAll()
-//                        .anyRequest().authenticated());
-//        return httpSecurity.build();
-//    }
 }
