@@ -23,7 +23,7 @@ public class ChatCategoryService {
     public ChatCategory findById(String id) {
         Optional<ChatCategory> result = repo.findById(id);
         if(result.isEmpty()) {
-            throw new NotFoundException("ChatCategory with given ID not found [ID = " + id + "]");
+            throw new NotFoundException("ChatCategory not found [ID = " + id + "]");
         }
         return result.get();
     }
@@ -38,11 +38,19 @@ public class ChatCategoryService {
 
     @Transactional
     public ChatCategory create(ChatCategory body) {
-        ChatCategory existed = repo.findByName(body.getName());
+        ChatCategory existed = repo.findByName(body.getName().toLowerCase());
         if(existed != null) {
             throw new EntityFieldException("Name of ChatCategory should be unique");
         }
         return repo.save(body);
+    }
+
+    @Transactional
+    public void delete(String id) {
+        if(repo.findById(id).isEmpty()) {
+            throw new NotFoundException("ChatCategory not found [ID = " + id + "]");
+        }
+        repo.deleteById(id);
     }
 
 
