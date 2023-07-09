@@ -74,7 +74,7 @@ public class ChatCategoryController {
                     content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
             ),
             @ApiResponse(
-                    responseCode = "200",
+                    responseCode = "400",
                     description = "Error. ChatCategory with given ID does not exist",
                     content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
             )
