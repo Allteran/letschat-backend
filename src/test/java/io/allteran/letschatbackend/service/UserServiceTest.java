@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -196,6 +196,153 @@ class UserServiceTest {
         }, "User not created because of internal exception");
         Assertions.assertNull(notCreatedUser[0], "Creation did not succeed, user is null");
     }
+
+    @Test
+    void createWithGoogle_shouldCreateUser() {
+        //given
+        User givenUser = new User(
+                "testGoogleId",
+                "googleName",
+                "googleEmail@mail.com",
+                null,
+                null,
+                null,
+                false,
+                null
+
+        );
+        User expectedUser = new User(
+                "testGoogleId",
+                "googleName",
+                "googleEmail@mail.com",
+                "",
+                "",
+                Set.of(Role.USER),
+                true,
+                LocalDateTime.now()
+
+        );
+        Mockito.when(userRepo.save(givenUser)).thenReturn(expectedUser);
+
+        //when
+        User createdUser = userService.createUserWithGoogle(givenUser);
+
+        //then
+        Assertions.assertNotNull(createdUser);
+        Assertions.assertEquals(expectedUser.getId(), createdUser.getId());
+        Assertions.assertEquals(expectedUser.getEmail(), createdUser.getEmail());
+        Assertions.assertEquals(expectedUser.getName(), createdUser.getName());
+        Assertions.assertEquals(expectedUser.getPassword(), createdUser.getPassword());
+        Assertions.assertEquals(expectedUser.getPasswordConfirm(), createdUser.getPasswordConfirm());
+        Assertions.assertEquals(expectedUser.getRoles(), createdUser.getRoles());
+        Assertions.assertEquals(expectedUser.isActive(), createdUser.isActive());
+    }
+
+    @Test
+    void createUserWithGoogle_shouldThrow_nameEmpty() {
+        //given
+        User givenUser = new User(
+                "testGoogleId",
+                "     ",
+                "googleEmail@mail.com",
+                null,
+                null,
+                null,
+                false,
+                null
+
+        );
+        //then
+        final User[] notCreatedUser = new User[1];
+        Assertions.assertThrows(EntityFieldException.class, () -> {
+             notCreatedUser[0] = userService.createUserWithGoogle(givenUser);
+        }, "Name shouldn't be empty or blank");
+        Assertions.assertNull(notCreatedUser[0]);
+    }
+
+    @Test
+    void createUserWithGoogle_shouldThrow_userExist() {
+        //given
+        User givenUser = new User(
+                "testGoogleId",
+                "googleName",
+                "email@email.com",
+                null,
+                null,
+                null,
+                false,
+                null
+
+        );
+        User existedUser = new User(
+                "anotherId",
+                "anotherName",
+                "email@email.com",
+                "",
+                "",
+                Set.of(Role.USER),
+                true,
+                null
+        );
+        //when
+        Mockito.when(userRepo.findByEmail(givenUser.getEmail())).thenReturn(existedUser);
+
+        //then
+        final User[] notCreatedUser = new User[1];
+        Assertions.assertThrows(EntityFieldException.class, () -> {
+            notCreatedUser[0] = userService.createUserWithGoogle(givenUser);
+        });
+        Assertions.assertNull(notCreatedUser[0]);
+    }
+
+    @Test
+    void verifyUser_shouldVerify() {
+        //given
+        String givenLogin = "simpleUser";
+        long givenCode = 123123;
+        User existedUser = new User(
+                "testId",
+                "testName",
+                givenLogin,
+                "password",
+                "password",
+                Set.of(Role.USER),
+                false,
+                null
+        );
+
+        Mockito.when(verificationCodeService.verify(givenLogin, givenCode)).thenReturn(true);
+        Mockito.when(userRepo.findByEmail(givenLogin)).thenReturn(existedUser);
+        //when
+        boolean verified = userService.verifyUser(givenLogin, givenCode);
+
+        Assertions.assertTrue(verified);
+    }
+
+    @Test
+    void verifyUser_shouldFail() {
+        //given
+        String givenLogin = "simpleUser";
+        long givenCode = 123123;
+        User existedUser = new User(
+                "testId",
+                "testName",
+                givenLogin,
+                "password",
+                "password",
+                Set.of(Role.USER),
+                false,
+                null
+        );
+
+        Mockito.when(verificationCodeService.verify(givenLogin, givenCode)).thenReturn(false);
+        //when
+        boolean verified = userService.verifyUser(givenLogin, givenCode);
+
+        Assertions.assertFalse(verified);
+    }
+
+
 
 
 }
