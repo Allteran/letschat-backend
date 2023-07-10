@@ -49,21 +49,21 @@ public class ForgotPasswordController {
         }
     }
 
-    @Operation(summary = "Validate reset password token")
+    @Operation(summary = "Verify reset password token")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Success. Incoming token is valid for password reset",
+                    description = "Success. Incoming token is verified for password reset",
                     content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = String.class))}
             ),
             @ApiResponse(
                     responseCode = "406",
-                    description = "Fail. Token is invalid",
+                    description = "Fail. Token is not verified",
                     content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = String.class))}
             )
     })
-    @GetMapping("/validate")
-    public ResponseEntity<String> validateResetPasswordToken(@RequestParam("token") String token, @RequestParam("email") String userLogin) {
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyPasswordResetToken(@RequestParam("token") String token, @RequestParam("email") String userLogin) {
         if(passwordResetService.validateResetPasswordToken(token, userLogin)) {
             return ResponseEntity.ok("SUCCESS");
         } else {
