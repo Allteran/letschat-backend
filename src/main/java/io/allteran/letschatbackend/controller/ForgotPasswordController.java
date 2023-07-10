@@ -10,14 +10,16 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.mail.MessagingException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/forgot-password")
 public class ForgotPasswordController {
-    private PasswordResetService passwordResetService;
+    private final PasswordResetService passwordResetService;
     @Operation(summary = "Creates request to change password", description = "Current methods checks given data (user email) and checks if there such user in system and creates link to reset the password and sends it to users email.")
     @ApiResponses(value = {
             @ApiResponse(
