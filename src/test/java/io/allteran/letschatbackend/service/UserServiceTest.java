@@ -5,6 +5,7 @@ import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.domain.UserVerificationCode;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.InternalException;
+import io.allteran.letschatbackend.exception.NotFoundException;
 import io.allteran.letschatbackend.exception.UserStateException;
 import io.allteran.letschatbackend.repo.UserRepo;
 import jakarta.mail.MessagingException;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -187,7 +189,7 @@ class UserServiceTest {
         );
         //when
         Mockito.when(verificationCodeService.createCode(givenUser.getEmail())).thenReturn(code);
-        Mockito.doThrow(MessagingException.class).when(emailService).sendVerificationEmail(code, givenUser.getUsername());
+        Mockito.doThrow(MessagingException.class).when(emailService).sendVerificationEmail(code, givenUser.getName());
 
         //then
         final User[] notCreatedUser = new User[1];
@@ -340,6 +342,80 @@ class UserServiceTest {
         boolean verified = userService.verifyUser(givenLogin, givenCode);
 
         Assertions.assertFalse(verified);
+    }
+
+    @Test
+    void changePasswordFromReset_shouldChange() {
+        //given
+        String givenEmail = "givenEmail@mail.com";
+        String givenPassword = "password";
+        String givenPasswordConfirm = "password";
+
+        User existedUser = new User(
+                "id",
+                "name",
+                givenEmail,
+                "somePassword",
+                "somePassword",
+                Set.of(Role.USER),
+                true,
+                null
+        );
+
+        Mockito.when(userRepo.findByEmail(givenEmail)).thenReturn(existedUser);
+
+        //when
+        boolean changedPassword = userService.changePasswordFromReset(givenEmail, givenPassword, givenPasswordConfirm);
+
+        Assertions.assertTrue(changedPassword);
+    }
+
+    @Test
+    void changePasswordFromReset_shouldThrow_userNotFound() {
+        //given
+        String givenEmail = "givenEmail@mail.com";
+        String givenPassword = "password";
+        String givenPasswordConfirm = "password";
+
+        Mockito.when(userRepo.findByEmail(givenEmail)).thenReturn(null);
+
+        AtomicBoolean notChangedPassword = new AtomicBoolean(false);
+        //then
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            notChangedPassword.set(userService.changePasswordFromReset(givenEmail, givenPassword, givenPasswordConfirm));
+        });
+
+        Assertions.assertFalse(notChangedPassword.get());
+
+    }
+
+    @Test
+    void changePasswordFromReset_shouldThrow_passwordsNotEqual() {
+        //given
+        String givenEmail = "givenEmail@mail.com";
+        String givenPassword = "password";
+        String givenPasswordConfirm = "notEqualPasswordConfirm";
+        User existedUser = new User(
+                "id",
+                "name",
+                givenEmail,
+                "somePassword",
+                "somePassword",
+                Set.of(Role.USER),
+                true,
+                null
+        );
+
+        Mockito.when(userRepo.findByEmail(givenEmail)).thenReturn(existedUser);
+
+        AtomicBoolean notChangedPassword = new AtomicBoolean(false);
+        //then
+        Assertions.assertThrows(EntityFieldException.class, () -> {
+            notChangedPassword.set(userService.changePasswordFromReset(givenEmail, givenPassword, givenPasswordConfirm));
+        });
+
+        Assertions.assertFalse(notChangedPassword.get());
+
     }
 
 
