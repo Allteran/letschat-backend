@@ -80,16 +80,16 @@ public class UserService implements UserDetailsService {
         user.setRoles(Set.of(Role.USER));
 
         try {
-            sendVerificationCode(user.getEmail());
+            sendVerificationCode(user.getEmail(), user.getName());
             return repo.save(user);
         } catch (MessagingException | IOException e) {
             throw new InternalException(e.getMessage());
         }
     }
 
-    public void sendVerificationCode(String email) throws MessagingException, IOException {
+    public void sendVerificationCode(String email, String username) throws MessagingException, IOException {
         UserVerificationCode code = verificationCodeService.createCode(email);
-        emailService.sendVerificationEmail(code, email);
+        emailService.sendVerificationEmail(code, username);
     }
 
     @Transactional

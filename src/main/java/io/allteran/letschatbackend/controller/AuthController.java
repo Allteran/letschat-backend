@@ -98,7 +98,7 @@ public class AuthController {
     })
     @PostMapping("/resendCode/{email}")
     public ResponseEntity<UserVerificationResponse> resendVerificationCode(@PathVariable("email") String email) {
-        return ResponseEntity.ok(authService.resendVerificationCode(email));
+        return ResponseEntity.ok(authService.resendVerificationCode(email, "user"));
     }
 
     //so for now I didn't get how to implement OAUTH2 with JWT username&password auth, so it will be very bad code rn

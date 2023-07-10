@@ -105,9 +105,9 @@ public class AuthService {
         return response;
     }
 
-    public UserVerificationResponse resendVerificationCode(String email) {
+    public UserVerificationResponse resendVerificationCode(String email, String username) {
         try {
-            userService.sendVerificationCode(email);
+            userService.sendVerificationCode(email, username);
             return new UserVerificationResponse(email, MESSAGE_VERIFICATION_RESENT_SUCCESSFULLY);
         } catch (MessagingException | IOException ex) {
             return new UserVerificationResponse(email, ex.getMessage());
