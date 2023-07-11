@@ -63,7 +63,7 @@ public class AuthController {
     })
     @PostMapping("/signUp")
     public ResponseEntity<AuthResponse> singUp(@RequestBody UserDto body) {
-       return ResponseEntity.ok(authService.registerUser(EntityMapper.convertToEntity(body)));
+       return ResponseEntity.ok(authService.registerUser(EntityMapper.convertToEntity(body, null)));
     }
 
     @ApiResponses(value = {
@@ -124,7 +124,7 @@ public class AuthController {
     })
     @PostMapping("/google/signUp")
     public ResponseEntity<AuthResponse> googleRegister(@RequestBody UserDto body) {
-        return ResponseEntity.ok(authService.registerWithGoogle(EntityMapper.convertToEntity(body)));
+        return ResponseEntity.ok(authService.registerWithGoogle(EntityMapper.convertToEntity(body, null)));
     }
 
     @Operation(summary = "Login with Google Account", description = "WILL BE DEPRECATED SOON")
