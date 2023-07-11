@@ -14,8 +14,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -35,6 +40,8 @@ public class ChatCategoryController {
     })
     @GetMapping(path = {"", "/"})
     public ResponseEntity<GeneralResponse<ChatCategoryDto>> getAll() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         List<ChatCategoryDto> data = categoryService.findAll().stream().map(EntityMapper::convertToDto).toList();
         String message = (data.isEmpty()) ? "There is no ChatCategory in DB" : "OK";
         return ResponseEntity.ok(new GeneralResponse<>(message, data));
