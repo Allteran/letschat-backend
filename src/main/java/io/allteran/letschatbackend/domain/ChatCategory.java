@@ -6,7 +6,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Schema(description = "Backend entity. Stands for different chat categories that can be expanded by admin user")
+@Schema(name = "ChatCategory", description = "Backend entity. Stands for different chat categories that can be expanded by admin user")
 @Document(value = "chat_category")
 @Data
 public class ChatCategory {

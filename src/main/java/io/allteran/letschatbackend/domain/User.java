@@ -20,7 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(value = "chat_user")
-@Schema(description = "Entity to describe user as it implemented in database. ONLY FOR BACKEND PURPOSES")
+@Schema(name = "User", description = "Backend entity. Entity to describe user as it implemented in database.")
 public class User implements UserDetails {
     @Id
     private String id;

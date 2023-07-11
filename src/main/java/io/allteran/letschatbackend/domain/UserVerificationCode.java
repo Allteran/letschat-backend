@@ -16,7 +16,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document("user_verification_code")
-@Schema(description = "Entity to describe UserVerificationCode as it implemented in database. ONLY FOR BACKEND PURPOSES")
+@Schema(name = "UserVerificationCode", description = "Backend entity. Entity to describe UserVerificationCode as it implemented in database.")
 public class UserVerificationCode {
     @Id
     private String id;
