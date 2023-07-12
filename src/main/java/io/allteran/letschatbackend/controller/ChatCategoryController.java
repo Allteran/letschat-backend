@@ -11,16 +11,15 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +29,10 @@ import java.util.List;
 public class ChatCategoryController {
     private final ChatCategoryService categoryService;
 
+    @Value("${url.static.userimage.path.get}")
+    private String UI_URL;
+
+    @SneakyThrows
     @Operation(summary = "Get all ChatCategory")
     @ApiResponses(value = {
             @ApiResponse(
@@ -39,9 +42,14 @@ public class ChatCategoryController {
             )
     })
     @GetMapping(path = {"", "/"})
-    public ResponseEntity<GeneralResponse<ChatCategoryDto>> getAll() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    public ResponseEntity<GeneralResponse<ChatCategoryDto>> getAll(HttpServletRequest request) {
+        String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
+                .replacePath(null)
+                .build()
+                .toUriString() + UI_URL;
+        String imageUrl = baseUrl + "jkasjdkljalsdjinia.jpg";
 
+        String changedUrl = imageUrl.replaceAll(baseUrl, "");
         List<ChatCategoryDto> data = categoryService.findAll().stream().map(EntityMapper::convertToDto).toList();
         String message = (data.isEmpty()) ? "There is no ChatCategory in DB" : "OK";
         return ResponseEntity.ok(new GeneralResponse<>(message, data));

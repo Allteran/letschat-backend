@@ -39,6 +39,8 @@ public class User implements UserDetails {
     boolean active;
     @Schema(nullable = true, description = "You can ignore this field while creating user on frontend")
     private LocalDateTime creationDate;
+    @Schema(description = "Stores user image ID with format that. File stores on static DB S3")
+    private String userImage;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -16,9 +16,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -125,5 +127,16 @@ public class UserService implements UserDetailsService {
 
     public User findByEmail(String email) {
         return repo.findByEmail(email);
+    }
+
+    @Transactional
+    public User saveUserImage(String userId, String userImage) {
+        Optional<User> userOptional = repo.findById(userId);
+        if(userOptional.isEmpty()) {
+            throw new NotFoundException("User not found");
+        }
+        User user = userOptional.get();
+        user.setUserImage(userImage);
+        return repo.save(user);
     }
 }
