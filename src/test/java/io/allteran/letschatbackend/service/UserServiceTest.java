@@ -51,6 +51,7 @@ class UserServiceTest {
                 "testPassword",
                 null,
                 true,
+                null,
                 null
         );
         String rawPassword = givenUser.getPassword();
@@ -84,7 +85,8 @@ class UserServiceTest {
                 "testPassword",
                 Set.of(Role.USER),
                 false,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
 
         //then
@@ -106,7 +108,8 @@ class UserServiceTest {
                 "testPassword",
                 Set.of(Role.USER),
                 false,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
         //then
         final User[] notCreatedUser = new User[1];
@@ -127,7 +130,8 @@ class UserServiceTest {
                 "testPassword",
                 Set.of(Role.USER),
                 false,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
 
         //given
@@ -152,7 +156,8 @@ class UserServiceTest {
                 "testPassword",
                 Set.of(Role.USER),
                 true,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
 
         //when
@@ -178,7 +183,8 @@ class UserServiceTest {
                 "testPassword",
                 Set.of(Role.USER),
                 true,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
         UserVerificationCode code = new UserVerificationCode(
                 "testCodeId",
@@ -210,6 +216,7 @@ class UserServiceTest {
                 null,
                 null,
                 false,
+                null,
                 null
 
         );
@@ -221,7 +228,8 @@ class UserServiceTest {
                 "",
                 Set.of(Role.USER),
                 true,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
 
         );
         Mockito.when(userRepo.save(givenUser)).thenReturn(expectedUser);
@@ -251,8 +259,8 @@ class UserServiceTest {
                 null,
                 null,
                 false,
+                null,
                 null
-
         );
         //then
         final User[] notCreatedUser = new User[1];
@@ -273,8 +281,8 @@ class UserServiceTest {
                 null,
                 null,
                 false,
+                null,
                 null
-
         );
         User existedUser = new User(
                 "anotherId",
@@ -284,6 +292,7 @@ class UserServiceTest {
                 "",
                 Set.of(Role.USER),
                 true,
+                null,
                 null
         );
         //when
@@ -310,6 +319,7 @@ class UserServiceTest {
                 "password",
                 Set.of(Role.USER),
                 false,
+                null,
                 null
         );
 
@@ -334,6 +344,7 @@ class UserServiceTest {
                 "password",
                 Set.of(Role.USER),
                 false,
+                null,
                 null
         );
 
@@ -359,6 +370,7 @@ class UserServiceTest {
                 "somePassword",
                 Set.of(Role.USER),
                 true,
+                null,
                 null
         );
 
@@ -403,6 +415,7 @@ class UserServiceTest {
                 "somePassword",
                 Set.of(Role.USER),
                 true,
+                null,
                 null
         );
 
