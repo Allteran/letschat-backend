@@ -9,15 +9,22 @@ import io.allteran.letschatbackend.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 
 public class EntityMapper {
-    public static UserDto convertToDto(User e) {
+    public static UserDto convertToDto(User e, String imageBaseUrl) {
         UserDto dto = new UserDto();
-        BeanUtils.copyProperties(e, dto);
+        BeanUtils.copyProperties(e, dto, "userImage");
+        if(e.getUserImage() != null && imageBaseUrl != null) {
+            dto.setUserImage(imageBaseUrl + e.getUserImage());
+        }
         return dto;
     }
 
-    public static User convertToEntity(UserDto dto) {
+    public static User convertToEntity(UserDto dto, String imageBaseUrl) {
         User e = new User();
-        BeanUtils.copyProperties(dto, e);
+        BeanUtils.copyProperties(dto, e, "userImage");
+        if(dto.getUserImage() != null && imageBaseUrl != null) {
+            String imageId = dto.getUserImage().replace(imageBaseUrl, "");
+            e.setUserImage(imageId);
+        }
         return e;
     }
 

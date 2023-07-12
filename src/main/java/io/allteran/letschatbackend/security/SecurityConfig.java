@@ -19,6 +19,7 @@ public class SecurityConfig {
     private String ALLOWED_ORIGIN;
 
     public static final String[] ENDPOINTS_WHITELIST = {
+            "/api/v1/static/images/**",
             "/auth/**",
             "/api-docs/**",
             "swagger-doc/**",
