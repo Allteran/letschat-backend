@@ -1,15 +1,15 @@
 package io.allteran.letschatbackend.controller;
 
+import com.amazonaws.services.s3.Headers;
 import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.exception.InternalException;
 import io.allteran.letschatbackend.service.UserImageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -31,5 +31,17 @@ public class UserImageController {
         } catch (InternalException e) {
             return ResponseEntity.status(400).body(e.getMessage());
         }
+    }
+
+    @GetMapping("/download")
+    public ResponseEntity<ByteArrayResource> downloadUserImage(@RequestParam("userId") String userId) {
+        byte[] data = userImageService.downloadUserImage(userId);
+        ByteArrayResource resource = new ByteArrayResource(data);
+        return ResponseEntity
+                .ok()
+                .contentLength(data.length)
+                .header(Headers.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                .header(Headers.CONTENT_DISPOSITION, "attachment; filename=\"" + userId + "\"")
+                .body(resource);
     }
 }
