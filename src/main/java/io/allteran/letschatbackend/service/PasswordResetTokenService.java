@@ -20,8 +20,14 @@ public class PasswordResetTokenService {
     private final EmailService emailService;
 
     public PasswordResetToken generateToken(String userLogin) {
+        PasswordResetToken resetToken = findByUser(userLogin);
+        if(resetToken != null && validateToken(resetToken)) {
+            return resetToken;
+        }
+        resetToken = new PasswordResetToken();
         String token = UUID.randomUUID().toString();
-        PasswordResetToken resetToken = new PasswordResetToken();
+
+
         resetToken.setToken(token);
         resetToken.setUserLogin(userLogin);
 
