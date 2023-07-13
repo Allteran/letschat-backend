@@ -15,6 +15,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/forgot-password")
@@ -42,7 +44,7 @@ public class ForgotPasswordController {
     public ResponseEntity<String> sendResetPasswordRequest(@RequestParam("email") String email) {
         try {
             return ResponseEntity.ok(passwordResetService.resetPassword(email));
-        } catch (MessagingException e) {
+        } catch (MessagingException | IOException e) {
             return ResponseEntity.status(500).body(e.getMessage());
         } catch (NotFoundException e) {
             return ResponseEntity.status(404).body(e.getMessage());

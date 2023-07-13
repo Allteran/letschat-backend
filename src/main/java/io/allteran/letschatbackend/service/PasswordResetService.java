@@ -1,6 +1,7 @@
 package io.allteran.letschatbackend.service;
 
 import io.allteran.letschatbackend.domain.PasswordResetToken;
+import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.dto.payload.ChangePasswordRequest;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.NotFoundException;
@@ -8,21 +9,24 @@ import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 public class PasswordResetService {
     private final UserService userService;
     private final PasswordResetTokenService passwordResetTokenService;
 
-    public String resetPassword(String userLogin) throws MessagingException {
-        if(userService.findByEmail(userLogin) == null) {
+    public String resetPassword(String userLogin) throws MessagingException, IOException {
+        User user = userService.findByEmail(userLogin);
+        if(user == null) {
             throw new NotFoundException("Reset password error: user not found");
         }
         PasswordResetToken token = passwordResetTokenService.findByUser(userLogin);
         if(token == null || !passwordResetTokenService.validateToken(token)) {
             token = passwordResetTokenService.generateToken(userLogin);
         }
-        passwordResetTokenService.sendResetLink(token);
+        passwordResetTokenService.sendResetLink(token, user.getName());
         return "SUCCESS";
     }
 

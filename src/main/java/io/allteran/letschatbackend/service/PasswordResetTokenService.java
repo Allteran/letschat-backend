@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -54,7 +55,7 @@ public class PasswordResetTokenService {
         return new Date().before(token.getExpireDate());
     }
 
-    public void sendResetLink(PasswordResetToken token) throws MessagingException {
-        emailService.sendResetPasswordLink(token);
+    public void sendResetLink(PasswordResetToken token, String username) throws MessagingException, IOException {
+        emailService.sendResetPasswordLink(token, username);
     }
 }

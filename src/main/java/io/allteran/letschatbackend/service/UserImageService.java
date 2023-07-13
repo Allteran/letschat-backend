@@ -45,7 +45,7 @@ public class UserImageService {
     private File convertMultipleFilesToFile(MultipartFile multipartFile) throws IOException {
         File result = new File(multipartFile.getOriginalFilename());
         try (FileOutputStream fos = new FileOutputStream(result)) {
-;           fos.write(multipartFile.getBytes());
+            fos.write(multipartFile.getBytes());
         } catch (IOException e) {
             throw new IOException(e);
         }
