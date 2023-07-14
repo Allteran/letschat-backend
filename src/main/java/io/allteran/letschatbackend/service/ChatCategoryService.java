@@ -16,16 +16,12 @@ import java.util.Optional;
 public class ChatCategoryService {
     private final ChatCategoryRepo repo;
 
-    public List<ChatCategory> findAll() {
-        return repo.findAll();
+    public Optional<ChatCategory> findById(String id) {
+        return repo.findById(id);
     }
 
-    public ChatCategory findById(String id) {
-        Optional<ChatCategory> result = repo.findById(id);
-        if(result.isEmpty()) {
-            throw new NotFoundException("ChatCategory not found [ID = " + id + "]");
-        }
-        return result.get();
+    public List<ChatCategory> findAll() {
+        return repo.findAll();
     }
 
     public ChatCategory findByName(String name) {

@@ -129,6 +129,10 @@ public class UserService implements UserDetailsService {
         return repo.findByEmail(email);
     }
 
+    public Optional<User> findById(String id) {
+       return repo.findById(id);
+    }
+
     @Transactional
     public User saveUserImage(String userId, String userImage) {
         Optional<User> userOptional = repo.findById(userId);

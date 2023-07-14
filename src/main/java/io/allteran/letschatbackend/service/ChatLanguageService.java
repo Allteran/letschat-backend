@@ -2,18 +2,23 @@ package io.allteran.letschatbackend.service;
 
 import io.allteran.letschatbackend.domain.ChatLanguage;
 import io.allteran.letschatbackend.exception.EntityFieldException;
+import io.allteran.letschatbackend.exception.NotFoundException;
 import io.allteran.letschatbackend.repo.ChatLanguageRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class ChatLanguageService {
     private final ChatLanguageRepo repo;
 
+    public Optional<ChatLanguage> findById(String id) {
+        return repo.findById(id);
+    }
     public List<ChatLanguage> findAll() {
         return repo.findAll();
     }
