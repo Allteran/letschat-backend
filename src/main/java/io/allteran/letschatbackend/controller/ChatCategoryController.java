@@ -28,28 +28,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChatCategoryController {
     private final ChatCategoryService categoryService;
-
-    @Value("${url.static.userimage.path.get}")
-    private String UI_URL;
-
     @SneakyThrows
     @Operation(summary = "Get all ChatCategory")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Get all Chat Categories",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
+                    description = "Get all Chat Categories. Response wrapped with GeneralResponse<ChatCategoryDto>",
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatCategoryDto.class))}
             )
     })
     @GetMapping(path = {"", "/"})
-    public ResponseEntity<GeneralResponse<ChatCategoryDto>> getAll(HttpServletRequest request) {
-        String baseUrl = ServletUriComponentsBuilder.fromRequestUri(request)
-                .replacePath(null)
-                .build()
-                .toUriString() + UI_URL;
-        String imageUrl = baseUrl + "jkasjdkljalsdjinia.jpg";
-
-        String changedUrl = imageUrl.replaceAll(baseUrl, "");
+    public ResponseEntity<GeneralResponse<ChatCategoryDto>> getAll() {
         List<ChatCategoryDto> data = categoryService.findAll().stream().map(EntityMapper::convertToDto).toList();
         String message = (data.isEmpty()) ? "There is no ChatCategory in DB" : "OK";
         return ResponseEntity.ok(new GeneralResponse<>(message, data));
@@ -59,12 +48,12 @@ public class ChatCategoryController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Category were created successfully",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
+                    description = "Category were created successfully. Response wrapped with GeneralResponse<ChatCategoryDto>",
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatCategoryDto.class))}
             ),
             @ApiResponse(
                     responseCode = "400",
-                    description = "Fail. User error in Category creation.",
+                    description = "Fail. User error in Category creation. ",
                     content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
             )
     })
@@ -85,8 +74,8 @@ public class ChatCategoryController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "Category was deleted successfully",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
+                    description = "Category was deleted successfullyResponse wrapped with GeneralResponse<ChatCategoryDto>",
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatCategoryDto.class))}
             ),
             @ApiResponse(
                     responseCode = "400",

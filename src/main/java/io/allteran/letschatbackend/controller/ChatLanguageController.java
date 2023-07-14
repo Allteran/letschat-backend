@@ -28,8 +28,8 @@ public class ChatLanguageController {
     @ApiResponses( value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "List all languages. It may be empty in case when there is no any of language in DB.",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
+                    description = "List all languages. It may be empty in case when there is no any of language in DB. Response wrapped with GeneralResponse<ChatLanguageDto>",
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatLanguageDto.class))}
             )
     })
     @GetMapping(path = {"/", ""})
@@ -43,8 +43,8 @@ public class ChatLanguageController {
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
-                    description = "ChatLanguage created successfully",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
+                    description = "ChatLanguage created successfully. Response will be wrapped with GeneralResponse<ChatLanguageDto>",
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatLanguageDto.class))}
             ),
             @ApiResponse(
                     responseCode = "400",

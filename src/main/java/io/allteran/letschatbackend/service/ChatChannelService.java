@@ -32,9 +32,14 @@ public class ChatChannelService {
         if(channel.getName().isBlank()) {
             throw new EntityFieldException("ChatChannel missing name");
         }
+        if(repo.findByName(channel.getName()) != null) {
+            throw new EntityFieldException("ChatChannel should have unique name [name=" + channel.getName() + "]");
+        }
         if(!currentUser.getRoles().contains(Role.ADMIN)) {
-            if(!channel.getAuthorId().equals(currentUser.getId())) {
-                throw new EntityFieldException("Author of channel is not current user or admin");
+            channel.setAuthorId(currentUser.getId());
+        } else {
+            if(channel.getAuthorId().isEmpty()) {
+                channel.setAuthorId(currentUser.getId());
             }
         }
         if(userService.findById(channel.getAuthorId()).isEmpty()) {
@@ -54,8 +59,8 @@ public class ChatChannelService {
     }
 
     @Transactional
-    public ChatChannel update(ChatChannel channel, User currentUser) {
-        Optional<ChatChannel> optionalChannel = repo.findById(channel.getId());
+    public ChatChannel update(String idFromDb, ChatChannel channel, User currentUser) {
+        Optional<ChatChannel> optionalChannel = repo.findById(idFromDb);
         if(optionalChannel.isEmpty()) {
             throw new NotFoundException("ChatChannel not found [ID=" + channel.getId() + "]");
         }
@@ -63,14 +68,16 @@ public class ChatChannelService {
         if(channel.getName().isBlank()) {
             throw new EntityFieldException("ChatChannel missing name");
         }
-        if(!currentUser.getRoles().contains(Role.ADMIN)) {
-            if(!channelFromDb.getAuthorId().equals(currentUser.getId()) || !channel.getAuthorId().equals(channelFromDb.getAuthorId())) {
-                throw new EntityFieldException("Current user is not allowed to modify this ChatChannel. Existing [ChatChannel.authorId = " + channelFromDb.getAuthorId() +
-                        "], modified [ChatChannel.authorId = " + channel.getAuthorId() + "], user [User.id = " + currentUser.getId() + "]");
+        if(!channel.getName().equals(channelFromDb.getName())) {
+            if(repo.findByName(channel.getName()) != null) {
+                throw new EntityFieldException("ChatChannel should have unique name [name=" + channel.getName() + "]");
             }
         }
-        if(userService.findById(channel.getAuthorId()).isEmpty()) {
-            throw new NotFoundException("User not found [ID=" + channel.getAuthorId() + "]");
+
+        if(!channel.getAuthorId().isEmpty()) {
+            if(!currentUser.getRoles().contains(Role.ADMIN)) {
+                channel.setAuthorId(channelFromDb.getAuthorId());
+            }
         }
         if(languageService.findById(channel.getLanguageId()).isEmpty()) {
             throw new NotFoundException("ChatLanguage not found [ID=" + channel.getLanguageId() + "]");
@@ -82,5 +89,13 @@ public class ChatChannelService {
         BeanUtils.copyProperties(channel, channelFromDb, "id");
 
         return repo.save(channelFromDb);
+    }
+
+    @Transactional
+    public void delete(String id) {
+        if(repo.findById(id).isEmpty()) {
+            throw new NotFoundException("ChatChannel not found [ID=" + id + "]");
+        }
+        repo.deleteById(id);
     }
 }
