@@ -3,6 +3,7 @@ package io.allteran.letschatbackend.service;
 import io.allteran.letschatbackend.domain.ChatChannel;
 import io.allteran.letschatbackend.domain.Role;
 import io.allteran.letschatbackend.domain.User;
+import io.allteran.letschatbackend.exception.AccessException;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.NotFoundException;
 import io.allteran.letschatbackend.repo.ChatChannelRepo;
@@ -92,10 +93,18 @@ public class ChatChannelService {
     }
 
     @Transactional
-    public void delete(String id) {
-        if(repo.findById(id).isEmpty()) {
+    public void delete(String id, User user) {
+
+        Optional<ChatChannel> optionalChannel = repo.findById(id);
+        if(optionalChannel.isEmpty()) {
             throw new NotFoundException("ChatChannel not found [ID=" + id + "]");
         }
+        if(!user.getRoles().contains(Role.ADMIN)) {
+            if(!user.getId().equals(optionalChannel.get().getAuthorId())) {
+                throw new AccessException("Current user not allowed to delete this channel");
+            }
+        }
+
         repo.deleteById(id);
     }
 }

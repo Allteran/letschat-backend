@@ -7,6 +7,7 @@ import io.allteran.letschatbackend.exception.NotFoundException;
 import io.allteran.letschatbackend.service.ChatCategoryService;
 import io.allteran.letschatbackend.util.EntityMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -34,7 +35,8 @@ public class ChatCategoryController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Get all Chat Categories. Response wrapped with GeneralResponse<ChatCategoryDto>",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatCategoryDto.class))}
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatCategoryDto.class))},
+                    headers = {@Header(name = "Authorization", required = true, description = "Required authorization with Bearer token (JWT)")}
             )
     })
     @GetMapping(path = {"", "/"})
@@ -49,12 +51,14 @@ public class ChatCategoryController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Category were created successfully. Response wrapped with GeneralResponse<ChatCategoryDto>",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatCategoryDto.class))}
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatCategoryDto.class))},
+                    headers = {@Header(name = "Authorization", required = true, description = "Required authorization with Bearer token (JWT)")}
             ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Fail. User error in Category creation. ",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))},
+                    headers = {@Header(name = "Authorization", required = true, description = "Required authorization with Bearer token (JWT)")}
             )
     })
     @PostMapping("/protected/new")
@@ -75,16 +79,17 @@ public class ChatCategoryController {
             @ApiResponse(
                     responseCode = "200",
                     description = "Category was deleted successfullyResponse wrapped with GeneralResponse<ChatCategoryDto>",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatCategoryDto.class))}
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatCategoryDto.class))},
+                    headers = {@Header(name = "Authorization", required = true, description = "Required authorization with Bearer token (JWT)")}
             ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Error. ChatCategory with given ID does not exist",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))},
+                    headers = {@Header(name = "Authorization", required = true, description = "Required authorization with Bearer token (JWT)")}
             )
     })
     @DeleteMapping("/protected/delete/{id}")
-
     public ResponseEntity<GeneralResponse<ChatCategoryDto>> delete(@PathVariable("id") String id) {
         try {
             categoryService.delete(id);

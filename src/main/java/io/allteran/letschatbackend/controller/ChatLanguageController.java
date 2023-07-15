@@ -6,6 +6,7 @@ import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.service.ChatLanguageService;
 import io.allteran.letschatbackend.util.EntityMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -29,7 +30,8 @@ public class ChatLanguageController {
             @ApiResponse(
                     responseCode = "200",
                     description = "List all languages. It may be empty in case when there is no any of language in DB. Response wrapped with GeneralResponse<ChatLanguageDto>",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatLanguageDto.class))}
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatLanguageDto.class))},
+                    headers = {@Header(name = "Authorization", required = true, description = "Required authorization with Bearer token (JWT)")}
             )
     })
     @GetMapping(path = {"/", ""})
@@ -44,12 +46,14 @@ public class ChatLanguageController {
             @ApiResponse(
                     responseCode = "200",
                     description = "ChatLanguage created successfully. Response will be wrapped with GeneralResponse<ChatLanguageDto>",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatLanguageDto.class))}
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = ChatLanguageDto.class))},
+                    headers = {@Header(name = "Authorization", required = true, description = "Required authorization with Bearer token (JWT)")}
             ),
             @ApiResponse(
                     responseCode = "400",
                     description = "Error. ChatLanguage wasn't created, check error message",
-                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))}
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))},
+                    headers = {@Header(name = "Authorization", required = true, description = "Required authorization with Bearer token (JWT)")}
             )
     })
     @PostMapping("/protected/new")
