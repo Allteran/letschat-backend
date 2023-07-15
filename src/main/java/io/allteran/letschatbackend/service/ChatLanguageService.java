@@ -34,12 +34,12 @@ public class ChatLanguageService {
         if(repo.findByName(language.getName().toLowerCase()) != null) {
             throw new EntityFieldException("ChatLanguage.name should be unique");
         }
-        if(repo.findByCode(language.getCode().toLowerCase()) != null) {
+        if(repo.findByCode(language.getCode().toUpperCase()) != null) {
             throw new EntityFieldException("ChatLanguage.code should be unique");
         }
 
-        language.setName(language.getName().toLowerCase());
-        language.setCode(language.getCode().toLowerCase());
+        language.setName(language.getName());
+        language.setCode(language.getCode().toUpperCase());
 
         return repo.save(language);
     }
