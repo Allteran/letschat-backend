@@ -14,7 +14,7 @@ import java.util.Map;
 public class WebSocketInterceptor implements HandshakeInterceptor {
     @Override
     //TODO: improve interceptor to store UserId TO SPECIFIC channel so we could count all subscribers
-    //or we can do it in other way, I just don't know by now
+    //or we can do it in other way, using SimpUserRegistry (check https://stackoverflow.com/questions/42923461/spring-boot-websockets-how-to-see-subscribers)
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         System.out.println("WE ARE HERE");
         if(request instanceof ServletServerHttpRequest) {
