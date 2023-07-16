@@ -33,7 +33,7 @@ public class ChatControllerIT {
 
 	@Value(value="${local.server.port}")
 	private int port;
-	private static final String SUBSCRIBE_PATH = "/topic/";
+	private static final String SUBSCRIBE_PATH = "/channel/";
 	private static final String SENDING_PATH = "/app/join/";
 	private SockJsClient sockJsClient;
 	private WebSocketStompClient stompClient;

@@ -39,7 +39,7 @@ public class ChatChannelService {
         if(!currentUser.getRoles().contains(Role.ADMIN)) {
             channel.setAuthorId(currentUser.getId());
         } else {
-            if(channel.getAuthorId().isEmpty()) {
+            if(channel.getAuthorId() == null || channel.getAuthorId().isEmpty()) {
                 channel.setAuthorId(currentUser.getId());
             }
         }
