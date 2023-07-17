@@ -2,14 +2,15 @@ package io.allteran.letschatbackend.controller.ws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.allteran.letschatbackend.config.WebSocketConfig;
-import io.allteran.letschatbackend.dto.MessageDto;
+import io.allteran.letschatbackend.config.ws.WebSocketConfig;
+import io.allteran.letschatbackend.dto.payload.ChatMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
@@ -33,7 +34,7 @@ public class ChatControllerIT {
 
 	@Value(value="${local.server.port}")
 	private int port;
-	private static final String SUBSCRIBE_PATH = "/channel/";
+	private static final String SUBSCRIBE_PATH = "/topic/chat-channel/";
 	private static final String SENDING_PATH = "/app/join/";
 	private SockJsClient sockJsClient;
 	private WebSocketStompClient stompClient;
@@ -55,17 +56,18 @@ public class ChatControllerIT {
 	}
 
 	@Test
+	//TODO: figure out how to deal with @WithMockUser(roles={"USER}) cus it's not working with or without this annotation
 	public void joinChannel_shouldJoinChannel() throws Exception {
 		//given
 		String destId = "destId";
-		MessageDto body = MessageDto.builder()
+		ChatMessage body = ChatMessage.builder()
 				.id("messageId")
 				.content("Message content")
 				.creationDate(LocalDateTime.now())
 				.sender("sender")
 				.status("SENT_BY_CLIENT")
 				.receiver(destId)
-				.type("JOIN")
+				.type(ChatMessage.Type.JOIN)
 				.build();
 
 		final CountDownLatch latch = new CountDownLatch(1);
@@ -80,13 +82,13 @@ public class ChatControllerIT {
 					@Override
 					public Type getPayloadType(StompHeaders headers) {
 						System.out.println("PAYLOAD MessageDto.class");
-						return MessageDto.class;
+						return ChatMessage.class;
 					}
 
 					@Override
 					public void handleFrame(StompHeaders headers, Object payload) {
 						System.out.println("handleFrame, payload = " + payload.toString());
-						MessageDto response = (MessageDto) payload;
+						ChatMessage response = (ChatMessage) payload;
 						try {
 							assertEquals(body.getId(), response.getId());
 						} catch (Throwable t) {
@@ -109,7 +111,6 @@ public class ChatControllerIT {
 				}
 			}
 		};
-
 		System.out.println("CONNECTING TO: " + "ws://localhost:{port}" + WebSocketConfig.WS_ENDPOINT);
 		this.stompClient.connect("ws://localhost:{port}" + WebSocketConfig.WS_ENDPOINT, this.headers, handler, this.port);
 

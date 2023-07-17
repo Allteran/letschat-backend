@@ -1,22 +1,26 @@
-package io.allteran.letschatbackend.domain;
+package io.allteran.letschatbackend.dto.payload;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
-@Document(value = "chat_message")
-public class Message {
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder()
+public class ChatMessage {
     private String id;
     private String sender;
     private String receiver;
     private String content;
     private String status;
     private LocalDateTime creationDate;
-    private MessageType type;
+    private Type type;
 
-    public enum MessageType {
+    public enum Type {
         JOIN, LEAVE, PUBLIC, PRIVATE;
     }
 }
