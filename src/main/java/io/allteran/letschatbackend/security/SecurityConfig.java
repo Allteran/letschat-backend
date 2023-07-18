@@ -24,7 +24,7 @@ public class SecurityConfig {
             "/api-docs/**",
             "swagger-doc/**",
             "/forgot-password/**",
-            "/favicon.ico"
+            "/favicon.ico",
     };
 
     public static final String[] ENDPOINTS_ADMIN = {

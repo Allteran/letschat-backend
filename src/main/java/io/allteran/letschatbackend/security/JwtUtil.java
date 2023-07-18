@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
@@ -27,17 +28,17 @@ public class JwtUtil {
         this.key = Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public String generateToken(User user) {
+    public String generateToken(UserDetails user) {
         Map<String, Object> claims = new HashMap<>();
         //here we put roles in claims
-        claims.put("roles", user.getRoles());
+        claims.put("roles", user.getAuthorities());
         long expirationSeconds = Long.parseLong(EXPIRATION_TIME);
         Date creationDate = new Date(System.currentTimeMillis());
         Date expirationDate = new Date(System.currentTimeMillis() + expirationSeconds * 1000);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(user.getEmail())
+                .setSubject(user.getUsername())
                 .signWith(key)
                 .setIssuedAt(creationDate)
                 .setExpiration(expirationDate)
