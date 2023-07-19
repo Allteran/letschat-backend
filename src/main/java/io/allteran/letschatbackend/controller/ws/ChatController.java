@@ -11,6 +11,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
@@ -35,7 +36,7 @@ public class ChatController {
         return body;
     }
 
-    //Here we will just check message, maybe do some minor fixes
+    //Here we will just check message and do some minor fixes
     @MessageMapping("/chat.sendMessage/{id}")
     @SendTo("/topic/chat-channel/{id}")
     public ChatMessage sendMessage(@DestinationVariable("id") String destId,
@@ -47,5 +48,11 @@ public class ChatController {
             throw new AccessException("User is not logged in");
         }
         return chatService.sendMessage(body, user.getId(), destId);
+    }
+
+    @SubscribeMapping("/topic/chat-channel/{id}")
+    public void onJoinChannel(@DestinationVariable("id") String destId) {
+        //so here we have to save counter of members of the channel
+
     }
 }
