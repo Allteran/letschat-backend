@@ -1,11 +1,12 @@
 package io.allteran.letschatbackend.service;
 
-import io.allteran.letschatbackend.domain.PasswordResetToken;
 import io.allteran.letschatbackend.domain.User;
-import io.allteran.letschatbackend.dto.*;
+import io.allteran.letschatbackend.dto.payload.AuthRequest;
+import io.allteran.letschatbackend.dto.payload.AuthResponse;
+import io.allteran.letschatbackend.dto.payload.UserVerificationRequest;
+import io.allteran.letschatbackend.dto.payload.UserVerificationResponse;
 import io.allteran.letschatbackend.exception.EntityFieldException;
-import io.allteran.letschatbackend.exception.MailingException;
-import io.allteran.letschatbackend.exception.NotFoundException;
+import io.allteran.letschatbackend.exception.InternalException;
 import io.allteran.letschatbackend.exception.UserStateException;
 import io.allteran.letschatbackend.security.JwtUtil;
 import io.jsonwebtoken.JwtException;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +80,7 @@ public class AuthService {
         } catch (UserStateException ex) {
             response.setMessage(ex.getMessage());
             response.setStatus(AuthResponse.Status.USER_STATE_ERROR);
-        } catch (MailingException ex) {
+        } catch (InternalException ex) {
             response.setMessage(ex.getMessage());
             response.setStatus(AuthResponse.Status.INTERNAL_ERROR);
         }
@@ -102,11 +105,11 @@ public class AuthService {
         return response;
     }
 
-    public UserVerificationResponse resendVerificationCode(String email) {
+    public UserVerificationResponse resendVerificationCode(String email, String username) {
         try {
-            userService.sendVerificationCode(email);
+            userService.sendVerificationCode(email, username);
             return new UserVerificationResponse(email, MESSAGE_VERIFICATION_RESENT_SUCCESSFULLY);
-        } catch (MessagingException ex) {
+        } catch (MessagingException | IOException ex) {
             return new UserVerificationResponse(email, ex.getMessage());
         }
     }
@@ -125,31 +128,5 @@ public class AuthService {
         }
     }
 
-    public String resetPassword(String userLogin) throws MessagingException {
-        if(userService.findByEmail(userLogin) == null) {
-            throw new NotFoundException("Reset password error: user not found");
-        }
-        PasswordResetToken token = passwordResetTokenService.findByUser(userLogin);
-        if(token == null || !passwordResetTokenService.validateToken(token)) {
-            token = passwordResetTokenService.generateToken(userLogin);
-        }
-        passwordResetTokenService.sendResetLink(token);
-        return "SUCCESS";
-    }
 
-    public boolean validateResetPasswordToken(String token, String userLogin) {
-        PasswordResetToken passwordResetToken = passwordResetTokenService.findByToken(token);
-        //in case when token is null OR not null, but user is wrong - token isn't valid
-        if(passwordResetToken == null || !passwordResetToken.getUserLogin().equals(userLogin)) {
-            return false;
-        }
-        return passwordResetTokenService.validateToken(passwordResetToken);
-    }
-
-    public boolean changePassword(ChangePasswordRequest request) throws NotFoundException, EntityFieldException {
-        if(!validateResetPasswordToken(request.getPasswordResetToken(), request.getUserLogin())) {
-            return false;
-        }
-        return userService.changePasswordFromReset(request.getUserLogin(), request.getPassword(), request.getPasswordConfirm());
-    }
 }

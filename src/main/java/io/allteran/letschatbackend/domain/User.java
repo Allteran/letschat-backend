@@ -20,7 +20,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(value = "chat_user")
-@Schema(description = "Entity to describe user as it implemented in database. ONLY FOR BACKEND PURPOSES")
+@Schema(name = "User", description = "Backend entity. Entity to describe user as it implemented in database.")
 public class User implements UserDetails {
     @Id
     private String id;
@@ -39,6 +39,8 @@ public class User implements UserDetails {
     boolean active;
     @Schema(nullable = true, description = "You can ignore this field while creating user on frontend")
     private LocalDateTime creationDate;
+    @Schema(description = "Stores user image ID with format that. File stores on static DB S3")
+    private String userImage;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

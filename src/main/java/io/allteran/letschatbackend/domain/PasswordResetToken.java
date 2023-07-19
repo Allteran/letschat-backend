@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "Entity. Uses to help user reset password")
+@Schema(name = "PasswordResetToken", description = "Entity. Uses to help user reset password")
 public class PasswordResetToken {
     @Id
     private String id;

@@ -1,4 +1,4 @@
-package io.allteran.letschatbackend.dto;
+package io.allteran.letschatbackend.dto.payload;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

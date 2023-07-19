@@ -27,4 +27,6 @@ public class UserDto {
     boolean active;
     @Schema(nullable = true, description = "You can ignore this field while creating user on frontend")
     private LocalDateTime creationDate;
+    @Schema(description = "Stores link to user image. File stores on static DB S3")
+    private String userImage;
 }

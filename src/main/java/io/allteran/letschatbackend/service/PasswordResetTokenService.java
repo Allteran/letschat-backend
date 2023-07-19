@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.UUID;
 
@@ -20,8 +21,14 @@ public class PasswordResetTokenService {
     private final EmailService emailService;
 
     public PasswordResetToken generateToken(String userLogin) {
+        PasswordResetToken resetToken = findByUser(userLogin);
+        if(resetToken != null && validateToken(resetToken)) {
+            return resetToken;
+        }
+        resetToken = new PasswordResetToken();
         String token = UUID.randomUUID().toString();
-        PasswordResetToken resetToken = new PasswordResetToken();
+
+
         resetToken.setToken(token);
         resetToken.setUserLogin(userLogin);
 
@@ -48,7 +55,7 @@ public class PasswordResetTokenService {
         return new Date().before(token.getExpireDate());
     }
 
-    public void sendResetLink(PasswordResetToken token) throws MessagingException {
-        emailService.sendResetPasswordLink(token);
+    public void sendResetLink(PasswordResetToken token, String username) throws MessagingException, IOException {
+        emailService.sendResetPasswordLink(token, username);
     }
 }

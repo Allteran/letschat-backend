@@ -1,4 +1,4 @@
-package io.allteran.letschatbackend.dto;
+package io.allteran.letschatbackend.dto.payload;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -26,21 +26,5 @@ class AuthServiceTest {
     @Mock
     private PasswordResetTokenService passwordResetTokenService;
 
-    @Test
-    public void registerUser_shouldRegisterAndReturnUser() {
-        //given
-        User givenUser = new User(
-                "testId",
-                "testName",
-                "testEmail",
-                "testPassword",
-                "testPassword",
-                Set.of(Role.USER),
-                false,
-                LocalDateTime.now()
-        );
-
-//        Mockito.when()
-    }
-
+  
 }

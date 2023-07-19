@@ -4,7 +4,7 @@ import io.allteran.letschatbackend.domain.Role;
 import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.domain.UserVerificationCode;
 import io.allteran.letschatbackend.exception.EntityFieldException;
-import io.allteran.letschatbackend.exception.MailingException;
+import io.allteran.letschatbackend.exception.InternalException;
 import io.allteran.letschatbackend.exception.NotFoundException;
 import io.allteran.letschatbackend.exception.UserStateException;
 import io.allteran.letschatbackend.repo.UserRepo;
@@ -16,8 +16,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -79,16 +82,16 @@ public class UserService implements UserDetailsService {
         user.setRoles(Set.of(Role.USER));
 
         try {
-            sendVerificationCode(user.getEmail());
+            sendVerificationCode(user.getEmail(), user.getName());
             return repo.save(user);
-        } catch (MessagingException e) {
-            throw new MailingException(e.getMessage());
+        } catch (MessagingException | IOException e) {
+            throw new InternalException(e.getMessage());
         }
     }
 
-    public void sendVerificationCode(String email) throws MessagingException {
+    public void sendVerificationCode(String email, String username) throws MessagingException, IOException {
         UserVerificationCode code = verificationCodeService.createCode(email);
-        emailService.sendVerificationEmail(code, email);
+        emailService.sendVerificationEmail(code, username);
     }
 
     @Transactional
@@ -124,5 +127,20 @@ public class UserService implements UserDetailsService {
 
     public User findByEmail(String email) {
         return repo.findByEmail(email);
+    }
+
+    public Optional<User> findById(String id) {
+       return repo.findById(id);
+    }
+
+    @Transactional
+    public User saveUserImage(String userId, String userImage) {
+        Optional<User> userOptional = repo.findById(userId);
+        if(userOptional.isEmpty()) {
+            throw new NotFoundException("User not found");
+        }
+        User user = userOptional.get();
+        user.setUserImage(userImage);
+        return repo.save(user);
     }
 }

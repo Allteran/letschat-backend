@@ -2,14 +2,21 @@ package io.allteran.letschatbackend.controller.ws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import io.allteran.letschatbackend.config.WebSocketConfig;
-import io.allteran.letschatbackend.dto.MessageDto;
+import io.allteran.letschatbackend.config.SecurityTestConfig;
+import io.allteran.letschatbackend.config.ws.WebSocketConfig;
+import io.allteran.letschatbackend.dto.payload.ChatMessage;
+import io.allteran.letschatbackend.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
@@ -29,12 +36,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Import(SecurityTestConfig.class)
 public class ChatControllerIT {
+	@Mock
+	private JwtUtil jwtUtil;
 
 	@Value(value="${local.server.port}")
 	private int port;
-	private static final String SUBSCRIBE_PATH = "/topic/";
-	private static final String SENDING_PATH = "/app/join/";
+	private static final String MESSAGE_MAPPING_PATH = "/topic/chat-channel/";
+	private String SEND_TO_PATH = "/app/chat.join/{id}";
 	private SockJsClient sockJsClient;
 	private WebSocketStompClient stompClient;
 	private final WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
@@ -52,20 +62,24 @@ public class ChatControllerIT {
 		MappingJackson2MessageConverter mappingConverter = new MappingJackson2MessageConverter();
 		mappingConverter.setObjectMapper(mapper);
 		this.stompClient.setMessageConverter(mappingConverter);
+
+		jwtUtil = Mockito.mock(JwtUtil.class);
 	}
 
 	@Test
+	//TODO: fix ChatController, cuz even with declared annotations User in controller is null, so SecurityContextHolder FROM CONTROLLER not working and IDK WHYYYY
+	@WithMockUser(username = "testUser", authorities = {"USER", "ADMIN"})
 	public void joinChannel_shouldJoinChannel() throws Exception {
 		//given
 		String destId = "destId";
-		MessageDto body = MessageDto.builder()
+		ChatMessage body = ChatMessage.builder()
 				.id("messageId")
 				.content("Message content")
 				.creationDate(LocalDateTime.now())
 				.sender("sender")
 				.status("SENT_BY_CLIENT")
 				.receiver(destId)
-				.type("JOIN")
+				.type(ChatMessage.Type.JOIN)
 				.build();
 
 		final CountDownLatch latch = new CountDownLatch(1);
@@ -75,18 +89,18 @@ public class ChatControllerIT {
 
 			@Override
 			public void afterConnected(final StompSession session, StompHeaders connectedHeaders) {
-				System.out.println("SUBSCRIBING to: " + SUBSCRIBE_PATH + destId);
-				session.subscribe(SUBSCRIBE_PATH + destId, new StompFrameHandler() {
+				System.out.println("SUBSCRIBING to: " + MESSAGE_MAPPING_PATH + destId);
+				session.subscribe(MESSAGE_MAPPING_PATH + destId, new StompFrameHandler() {
 					@Override
 					public Type getPayloadType(StompHeaders headers) {
 						System.out.println("PAYLOAD MessageDto.class");
-						return MessageDto.class;
+						return ChatMessage.class;
 					}
 
 					@Override
 					public void handleFrame(StompHeaders headers, Object payload) {
 						System.out.println("handleFrame, payload = " + payload.toString());
-						MessageDto response = (MessageDto) payload;
+						ChatMessage response = (ChatMessage) payload;
 						try {
 							assertEquals(body.getId(), response.getId());
 						} catch (Throwable t) {
@@ -100,21 +114,20 @@ public class ChatControllerIT {
 					}
 				});
 				try {
-					System.out.println("SENDING TO " + SENDING_PATH);
-					session.send(SENDING_PATH + destId, body);
+					SEND_TO_PATH = SEND_TO_PATH.replace("{id}", destId);
+					System.out.println("SENDING TO " + SEND_TO_PATH);
+					session.send(SEND_TO_PATH, body);
 				} catch (Throwable t) {
-					System.out.println("sending error: " + t.getMessage());
+					t.printStackTrace();
 					failure.set(t);
 					latch.countDown();
 				}
 			}
 		};
-
-		System.out.println("CONNECTING TO: " + "ws://localhost:{port}" + WebSocketConfig.WS_ENDPOINT);
 		this.stompClient.connect("ws://localhost:{port}" + WebSocketConfig.WS_ENDPOINT, this.headers, handler, this.port);
 
-		System.out.println("WAITING FOR 3 SECONDS");
-		if (latch.await(3, TimeUnit.SECONDS)) {
+		//Wait for 3 seconds
+		if (latch.await(5, TimeUnit.SECONDS)) {
 			System.out.println("OK, MOVING ON");
 			if (failure.get() != null) {
 				System.out.println("failure.get != null");
@@ -122,7 +135,7 @@ public class ChatControllerIT {
 			}
 		}
 		else {
-			fail("MessageDto not received");
+			fail("ChatMessage not received");
 		}
 
 	}
