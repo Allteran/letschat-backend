@@ -12,6 +12,8 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 
@@ -27,8 +29,7 @@ public class ChatController {
     public ChatMessage joinChannel(@DestinationVariable("id")String destId,
                                    @Payload ChatMessage body,
                                    SimpMessageHeaderAccessor headerAccessor) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ChatMessage modifiedMessage = chatService.joinChannel(body, user.getId(), destId);
+        ChatMessage modifiedMessage = chatService.joinChannel(body, destId);
 
         //we put channelId and userId to sessionAttributes for manipulate with that using HandlerInterceptor
         headerAccessor.getSessionAttributes().put("userId", modifiedMessage.getSender());

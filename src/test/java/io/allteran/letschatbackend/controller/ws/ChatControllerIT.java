@@ -4,19 +4,34 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.allteran.letschatbackend.config.SecurityTestConfig;
 import io.allteran.letschatbackend.config.ws.WebSocketConfig;
+import io.allteran.letschatbackend.domain.Role;
+import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.dto.payload.ChatMessage;
 import io.allteran.letschatbackend.security.JwtUtil;
+import io.allteran.letschatbackend.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpHeaders;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.socket.WebSocketHttpHeaders;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.messaging.WebSocketStompClient;
@@ -28,6 +43,7 @@ import java.lang.reflect.Type;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -37,6 +53,9 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Import(SecurityTestConfig.class)
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration
+@Slf4j
 public class ChatControllerIT {
 	@Mock
 	private JwtUtil jwtUtil;
@@ -67,8 +86,6 @@ public class ChatControllerIT {
 	}
 
 	@Test
-	//TODO: fix ChatController, cuz even with declared annotations User in controller is null, so SecurityContextHolder FROM CONTROLLER not working and IDK WHYYYY
-	@WithMockUser(username = "testUser", authorities = {"USER", "ADMIN"})
 	public void joinChannel_shouldJoinChannel() throws Exception {
 		//given
 		String destId = "destId";
@@ -89,25 +106,27 @@ public class ChatControllerIT {
 
 			@Override
 			public void afterConnected(final StompSession session, StompHeaders connectedHeaders) {
-				System.out.println("SUBSCRIBING to: " + MESSAGE_MAPPING_PATH + destId);
+				log.info("TEST: SUBSCRIBING to: " + MESSAGE_MAPPING_PATH + destId);
 				session.subscribe(MESSAGE_MAPPING_PATH + destId, new StompFrameHandler() {
 					@Override
 					public Type getPayloadType(StompHeaders headers) {
-						System.out.println("PAYLOAD MessageDto.class");
+						log.info("TEST: PAYLOAD MessageDto.class");
 						return ChatMessage.class;
 					}
 
+					//here we handle all events and data what we can receive after subscription
 					@Override
 					public void handleFrame(StompHeaders headers, Object payload) {
-						System.out.println("handleFrame, payload = " + payload.toString());
+						log.info("TEST: handleFrame. Receiving message = " + payload.toString());
 						ChatMessage response = (ChatMessage) payload;
 						try {
+							//check returned payload
 							assertEquals(body.getId(), response.getId());
 						} catch (Throwable t) {
-							System.out.println("assertEquals failed, error = " + t.getMessage());
+							log.error("TEST: assertEquals failed, error = " + t);
 							failure.set(t);
 						} finally {
-							System.out.println("DISCONNECT");
+							log.info("TEST: DISCONNECT");
 							session.disconnect();
 							latch.countDown();
 						}
@@ -115,7 +134,7 @@ public class ChatControllerIT {
 				});
 				try {
 					SEND_TO_PATH = SEND_TO_PATH.replace("{id}", destId);
-					System.out.println("SENDING TO " + SEND_TO_PATH);
+					log.info("TEST: SENDING TO " + SEND_TO_PATH);
 					session.send(SEND_TO_PATH, body);
 				} catch (Throwable t) {
 					t.printStackTrace();
@@ -128,9 +147,9 @@ public class ChatControllerIT {
 
 		//Wait for 3 seconds
 		if (latch.await(5, TimeUnit.SECONDS)) {
-			System.out.println("OK, MOVING ON");
+			log.info("TEST: OK, MOVING ON");
 			if (failure.get() != null) {
-				System.out.println("failure.get != null");
+				log.error("TEST: failure.get != null");
 				throw new AssertionError("", failure.get());
 			}
 		}

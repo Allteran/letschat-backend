@@ -3,6 +3,10 @@ package io.allteran.letschatbackend.service;
 import io.allteran.letschatbackend.dto.payload.ChatMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.Local;
+import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,8 +17,7 @@ public class ChatService {
     private String STATUS_SENT_TO_CLIENT;
     @Value("${chat.message.status.error}")
     private String STATUS_ERROR;
-    public ChatMessage joinChannel(ChatMessage message, String senderId, String receiverId) {
-        message.setSender(senderId);
+    public ChatMessage joinChannel(ChatMessage message, String receiverId) {
         message.setType(ChatMessage.Type.JOIN);
         message.setReceiver(receiverId);
         message.setCreationDate(LocalDateTime.now());
