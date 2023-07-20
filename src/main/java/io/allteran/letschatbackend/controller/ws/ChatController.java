@@ -27,8 +27,7 @@ public class ChatController {
     public ChatMessage joinChannel(@DestinationVariable("id")String destId,
                                    @Payload ChatMessage body,
                                    SimpMessageHeaderAccessor headerAccessor) {
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        ChatMessage modifiedMessage = chatService.joinChannel(body, user.getId(), destId);
+        ChatMessage modifiedMessage = chatService.joinChannel(body, destId);
 
         //we put channelId and userId to sessionAttributes for manipulate with that using HandlerInterceptor
         headerAccessor.getSessionAttributes().put("userId", modifiedMessage.getSender());

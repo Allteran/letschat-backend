@@ -2,6 +2,7 @@ package io.allteran.letschatbackend.config.ws;
 
 import io.allteran.letschatbackend.dto.payload.ChatMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -10,6 +11,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class WSEventListener {
     private final SimpMessageSendingOperations messageTemplate;
 
@@ -19,7 +21,7 @@ public class WSEventListener {
         String userId = (String) headerAccessor.getSessionAttributes().get("userId");
         String channelId = (String) headerAccessor.getSessionAttributes().get("channelId");
         if(userId != null) {
-            System.out.println("USER DISCONNECTED [ID = " + userId);
+            log.info("USER DISCONNECTED [ID = {}]", userId);
             var chatMessage = ChatMessage.builder()
                     .type(ChatMessage.Type.LEAVE)
                     .sender(userId)

@@ -13,8 +13,7 @@ public class ChatService {
     private String STATUS_SENT_TO_CLIENT;
     @Value("${chat.message.status.error}")
     private String STATUS_ERROR;
-    public ChatMessage joinChannel(ChatMessage message, String senderId, String receiverId) {
-        message.setSender(senderId);
+    public ChatMessage joinChannel(ChatMessage message, String receiverId) {
         message.setType(ChatMessage.Type.JOIN);
         message.setReceiver(receiverId);
         message.setCreationDate(LocalDateTime.now());
