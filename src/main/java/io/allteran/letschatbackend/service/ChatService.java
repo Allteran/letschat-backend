@@ -2,7 +2,6 @@ package io.allteran.letschatbackend.service;
 
 import io.allteran.letschatbackend.dto.payload.ChatMessage;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

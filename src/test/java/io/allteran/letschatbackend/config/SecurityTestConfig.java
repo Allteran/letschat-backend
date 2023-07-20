@@ -4,18 +4,11 @@ import io.allteran.letschatbackend.domain.Role;
 import io.allteran.letschatbackend.domain.User;
 import jakarta.servlet.Filter;
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.RequiredArgsConstructor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpHeaders;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.SecurityFilterChain;
@@ -24,12 +17,6 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 @TestConfiguration
 public class SecurityTestConfig {
     @Bean(name = "testSecurityFilterChain")
@@ -41,8 +28,6 @@ public class SecurityTestConfig {
                 .authorizeHttpRequests((authz) ->
 
                         authz.anyRequest().authenticated())
-     authz.anyRequest().permitAll())
-
                 .cors(Customizer.withDefaults())
 //                .exceptionHandling()
 //                .authenticationEntryPoint(authEntryPoint)

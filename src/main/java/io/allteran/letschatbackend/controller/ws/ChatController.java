@@ -5,7 +5,6 @@ import io.allteran.letschatbackend.dto.payload.ChatMessage;
 import io.allteran.letschatbackend.exception.AccessException;
 import io.allteran.letschatbackend.service.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -14,8 +13,6 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
-
-import java.time.LocalDateTime;
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
