@@ -3,10 +3,6 @@ package io.allteran.letschatbackend.service;
 import io.allteran.letschatbackend.dto.payload.ChatMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.Local;
-import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
