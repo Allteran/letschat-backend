@@ -1,5 +1,7 @@
 package io.allteran.letschatbackend.dto.payload;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import io.allteran.letschatbackend.view.Views;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,5 +15,6 @@ import java.util.List;
 @NoArgsConstructor
 public class GeneralResponse<T> {
     private String message;
+    @JsonView(value = {Views.Public.class, Views.Internal.class, Views.Profile.class})
     private List<T> data;
 }

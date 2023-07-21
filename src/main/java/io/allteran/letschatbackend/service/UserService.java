@@ -3,6 +3,7 @@ package io.allteran.letschatbackend.service;
 import io.allteran.letschatbackend.domain.Role;
 import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.domain.UserVerificationCode;
+import io.allteran.letschatbackend.dto.UserDto;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.InternalException;
 import io.allteran.letschatbackend.exception.NotFoundException;
@@ -142,5 +143,21 @@ public class UserService implements UserDetailsService {
         User user = userOptional.get();
         user.setUserImage(userImage);
         return repo.save(user);
+    }
+
+    @Transactional
+    public User updateProfile(String currentUserId, UserDto user) {
+        Optional <User> userFromDbOptional = findById(currentUserId);
+        if(userFromDbOptional.isEmpty()) {
+            throw new NotFoundException("User not found [ID = " + currentUserId + "]");
+        }
+        if(findByEmail(user.getEmail()) != null) {
+            throw new EntityFieldException("Email should be unique [email = " + user.getEmail() + "]");
+        }
+        User userFromDb = userFromDbOptional.get();
+        userFromDb.setName(user.getName());
+        userFromDb.setEmail(user.getEmail());
+
+        return repo.save(userFromDb);
     }
 }

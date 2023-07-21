@@ -8,7 +8,9 @@ import io.allteran.letschatbackend.dto.ChatCategoryDto;
 import io.allteran.letschatbackend.dto.ChatChannelDto;
 import io.allteran.letschatbackend.dto.ChatLanguageDto;
 import io.allteran.letschatbackend.dto.UserDto;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeanUtils;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 public class EntityMapper {
     public static UserDto convertToDto(User e, String imageBaseUrl) {
@@ -64,6 +66,13 @@ public class EntityMapper {
         ChatChannel e = new ChatChannel();
         BeanUtils.copyProperties(dto, e);
         return e;
+    }
+
+    public static String extractBaseUrl(HttpServletRequest request) {
+        return ServletUriComponentsBuilder.fromRequestUri(request)
+                .replacePath(null)
+                .build()
+                .toUriString();
     }
 
 }

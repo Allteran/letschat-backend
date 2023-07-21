@@ -61,12 +61,26 @@ public class UserImageController {
         }
     }
 
+    @Operation(summary = "Download user image", description = "Download user image can every logged in user")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK. Image downloaded successfully",
+                    content = {@Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE, schema = @Schema(implementation = ByteArrayResource.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Fail. Internal error has been occurred",
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Fail. User does not have an image to download",
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE)}
+            )
+    })
     @GetMapping("/download/{userId}")
     public ResponseEntity<ByteArrayResource> downloadUserImage(@PathVariable("userId") String userId) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!currentUser.getId().equals(userId)) {
-            return ResponseEntity.status(401).body(null);
-        }
          try {
              byte[] data = userImageService.getUserImage(userId);
              ByteArrayResource resource = new ByteArrayResource(data);
