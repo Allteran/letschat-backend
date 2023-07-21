@@ -4,6 +4,7 @@ import io.allteran.letschatbackend.domain.Role;
 import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.domain.UserVerificationCode;
 import io.allteran.letschatbackend.dto.UserDto;
+import io.allteran.letschatbackend.dto.payload.ProfileChangePasswordRequest;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.InternalException;
 import io.allteran.letschatbackend.exception.NotFoundException;
@@ -17,7 +18,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -131,7 +131,7 @@ public class UserService implements UserDetailsService {
     }
 
     public Optional<User> findById(String id) {
-       return repo.findById(id);
+        return repo.findById(id);
     }
 
     @Transactional
@@ -159,5 +159,27 @@ public class UserService implements UserDetailsService {
         userFromDb.setEmail(user.getEmail());
 
         return repo.save(userFromDb);
+    }
+
+    @Transactional
+    public void changeUserPassword(String currentUserId, ProfileChangePasswordRequest passwordRequest) {
+        if(!passwordRequest.getNewPassword().equals(passwordRequest.getNewPasswordConfirm())) {
+            throw new EntityFieldException("Passwords don't match");
+        }
+        if(passwordRequest.getNewPassword().length() < 8) {
+            throw new EntityFieldException("Password should contain more than 8 characters");
+        }
+        Optional<User> userFromDbOptional = findById(currentUserId);
+        if(userFromDbOptional.isEmpty()) {
+            throw new NotFoundException("User not found [ID = " + currentUserId + "]");
+        }
+        User userFromDb = userFromDbOptional.get();
+
+        if(!passwordEncoder.matches(passwordRequest.getOldPassword(), userFromDb.getPassword())) {
+            throw new EntityFieldException("Entered wrong current password");
+        }
+
+        userFromDb.setPassword(passwordEncoder.encode(passwordRequest.getNewPassword()));
+        repo.save(userFromDb);
     }
 }

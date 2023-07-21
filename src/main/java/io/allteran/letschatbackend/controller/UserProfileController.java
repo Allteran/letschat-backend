@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.dto.UserDto;
 import io.allteran.letschatbackend.dto.payload.GeneralResponse;
+import io.allteran.letschatbackend.dto.payload.ProfileChangePasswordRequest;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.NotFoundException;
 import io.allteran.letschatbackend.service.UserService;
@@ -21,14 +22,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Collections;
 
 @RestController
-@RequestMapping("api/v1/user")
+@RequestMapping("api/v1/user/profile")
 @RequiredArgsConstructor
-public class UserController {
+public class UserProfileController {
     @Value("${url.static.userimage.path.get}")
     private String URL_PATH_IMAGE;
 
@@ -43,7 +43,7 @@ public class UserController {
             )
     })
     @JsonView(Views.Public.class)
-    @GetMapping("/profile/get")
+    @GetMapping("/get")
     public ResponseEntity<GeneralResponse<UserDto>> getProfile(HttpServletRequest request) {
         String baseImageUrl = EntityMapper.extractBaseUrl(request) + URL_PATH_IMAGE;
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -69,7 +69,7 @@ public class UserController {
             )
     })
     @JsonView(Views.Public.class)
-    @PutMapping("/profile/update")
+    @PutMapping("/update")
     //NOTICE that UserDto in this case may contain only UserDto.name and UserDto.email, other fields will be ignored
     public ResponseEntity<GeneralResponse<UserDto>> updateProfile(@RequestBody @JsonView(Views.Profile.class) UserDto user,
                                                                   HttpServletRequest request) {
@@ -82,6 +82,37 @@ public class UserController {
             return ResponseEntity.status(404).body(new GeneralResponse<>(ex.getMessage(), Collections.emptyList()));
         } catch (EntityFieldException ex) {
             return ResponseEntity.status(400).body(new GeneralResponse<>(ex.getMessage(), Collections.emptyList()));
+        }
+    }
+
+    @Operation(summary = "Change user password from profile ", description = "User can change own password from profile page")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "OK. Password changed successfully",
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(implementation = String.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Fail. Old password is not correct or new passwords mismatch",
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(implementation = String.class))}
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Fail. User with given ID not found in database. Usually it can be caused by internal error or security interception",
+                    content = {@Content(mediaType = MediaType.TEXT_PLAIN_VALUE, schema = @Schema(implementation = String.class))}
+            )
+    })
+    @PostMapping("/changePassword")
+    public ResponseEntity<String> changePassword(@RequestBody ProfileChangePasswordRequest request) {
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        try {
+            userService.changeUserPassword(currentUser.getId(), request);
+            return ResponseEntity.ok("OK");
+        } catch (EntityFieldException ex) {
+            return ResponseEntity.status(400).body(ex.getMessage());
+        } catch (NotFoundException ex) {
+            return ResponseEntity.status(404).body(ex.getMessage());
         }
     }
 }
