@@ -21,8 +21,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -431,7 +433,113 @@ class UserServiceTest {
 
     }
 
+    @Test
+    void saveUserImage_shouldSaveImage() {
+        //given
+        String givenUserId = "givenUserId";
+        String givenUserImage = "givenUserImage.jpg";
+        User existedUser = new User(
+                givenUserId,
+                "name",
+                "user@mail.com",
+                "somePassword",
+                "somePassword",
+                Set.of(Role.USER),
+                true,
+                null,
+                "anotherUserImage.png"
+        );
+        User expectedResult = new User (
+                givenUserId,
+                "name",
+                "user@mail.com",
+                "somePassword",
+                "somePassword",
+                Set.of(Role.USER),
+                true,
+                null,
+                givenUserImage
+        );
 
+        Mockito.when(userRepo.findById(givenUserId)).thenReturn(Optional.of(existedUser));
+        Mockito.when(userRepo.save(expectedResult)).thenReturn(expectedResult);
+
+        //when
+        User result = userService.saveUserImage(givenUserId, givenUserImage);
+
+        //then
+        Assertions.assertEquals(givenUserId, result.getId());
+        Assertions.assertEquals(givenUserImage, result.getUserImage());
+        Assertions.assertEquals(expectedResult, result);
+    }
+
+    @Test
+    void saveUserImage_shouldThrow_userNotFound() {
+        //given
+        String givenUserId = "givenUserId";
+        String givenUserImage = "givenUserImage.jpg";
+
+        Mockito.when(userRepo.findById(givenUserId)).thenReturn(Optional.empty());
+
+        AtomicReference<User> notChangedUserRef = new AtomicReference<>();
+        //then
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            notChangedUserRef.set(userService.saveUserImage(givenUserId, givenUserImage));
+        });
+
+        Assertions.assertNull(notChangedUserRef.get());
+    }
+
+    @Test
+    void updateProfile_shouldUpdate() {
+        //given
+        String givenUserId = "givenuserid";
+        //we can pass only name and email to update user profile
+        User givenUserBody = new User(
+                null,
+                "changedName",
+                "changedEmail",
+                null,
+                null,
+                null,
+                false,
+                null,
+                null
+        );
+        User existedUser = new User(
+                givenUserId,
+                "name",
+                "user@mail.com",
+                "somePassword",
+                "somePassword",
+                Set.of(Role.USER),
+                true,
+                null,
+                "userimage.png"
+        );
+        User expectedResult = new User(
+                givenUserId,
+                givenUserBody.getName(),
+                givenUserBody.getEmail(),
+                "somePassword",
+                "somePassword",
+                Set.of(Role.USER),
+                true,
+                null,
+                "userimage.png"
+        );
+
+        Mockito.when(userRepo.findById(givenUserId)).thenReturn(Optional.of(existedUser));
+        Mockito.when(userRepo.save(expectedResult)).thenReturn(existedUser);
+
+        //when
+        User actualResult = userService.updateProfile(givenUserId, givenUserBody);
+
+        //then
+        Assertions.assertEquals(expectedResult.getName(), actualResult.getName());
+        Assertions.assertEquals(expectedResult.getEmail(), actualResult.getEmail());
+        Assertions.assertEquals(expectedResult, actualResult);
+    }
 
 
 }

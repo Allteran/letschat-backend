@@ -50,7 +50,7 @@ public class UserProfileController {
         return ResponseEntity.ok(new GeneralResponse<>("OK", Collections.singletonList(EntityMapper.convertToDto(user, baseImageUrl))));
     }
 
-    @Operation(summary = "Update user profile", description = "User can update some details of own profile - name and email. Request body has to contain 2 fields: email and name, other fields will be ignored")
+    @Operation(summary = "Update body profile", description = "User can update some details of own profile - name and email. Request body has to contain 2 fields: email and name, other fields will be ignored")
     @ApiResponses(value = {
             @ApiResponse(
                     responseCode = "200",
@@ -71,12 +71,12 @@ public class UserProfileController {
     @JsonView(Views.Public.class)
     @PutMapping("/update")
     //NOTICE that UserDto in this case may contain only UserDto.name and UserDto.email, other fields will be ignored
-    public ResponseEntity<GeneralResponse<UserDto>> updateProfile(@RequestBody @JsonView(Views.Profile.class) UserDto user,
+    public ResponseEntity<GeneralResponse<UserDto>> updateProfile(@RequestBody @JsonView(Views.Profile.class) UserDto body,
                                                                   HttpServletRequest request) {
         User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String baseImageUrl = EntityMapper.extractBaseUrl(request) + URL_PATH_IMAGE;
         try {
-            User updatedProfile = userService.updateProfile(currentUser.getId(), user);
+            User updatedProfile = userService.updateProfile(currentUser.getId(), EntityMapper.convertToEntity(body, baseImageUrl));
             return ResponseEntity.ok(new GeneralResponse<>("OK", Collections.singletonList(EntityMapper.convertToDto(updatedProfile, baseImageUrl))));
         } catch (NotFoundException ex) {
             return ResponseEntity.status(404).body(new GeneralResponse<>(ex.getMessage(), Collections.emptyList()));

@@ -146,7 +146,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User updateProfile(String currentUserId, UserDto user) {
+    public User updateProfile(String currentUserId, User user) {
         Optional <User> userFromDbOptional = findById(currentUserId);
         if(userFromDbOptional.isEmpty()) {
             throw new NotFoundException("User not found [ID = " + currentUserId + "]");
