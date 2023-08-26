@@ -70,7 +70,7 @@ class UserServiceTest {
         Assertions.assertNotEquals(rawPassword, createdUser.getPassword());
         Assertions.assertEquals(createdUser.getPasswordConfirm().length(), 0);
         Assertions.assertFalse(createdUser.isActive());
-        Assertions.assertTrue(createdUser.getRoles().contains(Role.USER));
+        Assertions.assertTrue(createdUser.getRoles().contains(Role.PREAUTHORIZED));
         Assertions.assertEquals(createdUser.getRoles().size(), 1);
         assertNotNull(createdUser.getCreationDate());
     }

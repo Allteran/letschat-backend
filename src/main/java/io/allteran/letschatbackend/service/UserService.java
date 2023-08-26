@@ -109,6 +109,7 @@ public class UserService implements UserDetailsService {
             throw new NotFoundException("User with mentioned login not found");
         }
         user.setLanguage(language);
+        user.setRoles(Set.of(Role.USER));
         return true;
     }
 
