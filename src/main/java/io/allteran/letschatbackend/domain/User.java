@@ -41,6 +41,7 @@ public class User implements UserDetails {
     private LocalDateTime creationDate;
     @Schema(description = "Stores user image ID with format that. File stores on static DB S3")
     private String userImage;
+    private ChatLanguage language;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -1,10 +1,7 @@
 package io.allteran.letschatbackend.controller;
 
 import io.allteran.letschatbackend.dto.*;
-import io.allteran.letschatbackend.dto.payload.AuthRequest;
-import io.allteran.letschatbackend.dto.payload.AuthResponse;
-import io.allteran.letschatbackend.dto.payload.UserVerificationRequest;
-import io.allteran.letschatbackend.dto.payload.UserVerificationResponse;
+import io.allteran.letschatbackend.dto.payload.*;
 import io.allteran.letschatbackend.service.AuthService;
 import io.allteran.letschatbackend.util.EntityMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -81,6 +78,18 @@ public class AuthController {
     @PostMapping("/userVerify")
     public ResponseEntity<UserVerificationResponse> verifyUser(@RequestBody UserVerificationRequest request) {
         return ResponseEntity.ok(authService.verifyUser(request));
+    }
+
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "User registered fully and successfully",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = AuthResponse.class))}
+            )
+    })
+    @PostMapping("/completeRegistration")
+    public ResponseEntity<AuthResponse> completeRegistration(@RequestBody CompleteRegistrationRequest request) {
+        return ResponseEntity.ok(authService.completeRegistration(request));
     }
 
     @Operation(summary = "Resend verification code for user")

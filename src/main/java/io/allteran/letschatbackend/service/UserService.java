@@ -1,8 +1,6 @@
 package io.allteran.letschatbackend.service;
 
-import io.allteran.letschatbackend.domain.Role;
-import io.allteran.letschatbackend.domain.User;
-import io.allteran.letschatbackend.domain.UserVerificationCode;
+import io.allteran.letschatbackend.domain.*;
 import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.exception.InternalException;
 import io.allteran.letschatbackend.exception.NotFoundException;
@@ -20,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -79,7 +78,7 @@ public class UserService implements UserDetailsService {
         user.setPasswordConfirm("");
         user.setCreationDate(LocalDateTime.now());
         user.setActive(false);
-        user.setRoles(Set.of(Role.USER));
+        user.setRoles(Set.of(Role.PREAUTHORIZED));
 
         try {
             sendVerificationCode(user.getEmail(), user.getName());
@@ -94,7 +93,6 @@ public class UserService implements UserDetailsService {
         emailService.sendVerificationEmail(code, username);
     }
 
-    @Transactional
     public boolean verifyUser(String login, long code) {
         boolean codeVerified = verificationCodeService.verify(login, code);
         if(codeVerified) {
@@ -103,6 +101,15 @@ public class UserService implements UserDetailsService {
             repo.save(user);
         }
         return codeVerified;
+    }
+
+    public boolean completeUserRegistration(String login, ChatLanguage language, List<Interest> interests) {
+        User user = repo.findByEmail(login);
+        if(user == null) {
+            throw new NotFoundException("User with mentioned login not found");
+        }
+        user.setLanguage(language);
+        return true;
     }
 
     private boolean emailValidation(String email) {

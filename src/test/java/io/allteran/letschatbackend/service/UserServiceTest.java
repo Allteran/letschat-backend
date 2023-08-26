@@ -52,6 +52,7 @@ class UserServiceTest {
                 null,
                 true,
                 null,
+                null,
                 null
         );
         String rawPassword = givenUser.getPassword();
@@ -86,6 +87,7 @@ class UserServiceTest {
                 Set.of(Role.USER),
                 false,
                 LocalDateTime.now(),
+                null,
                 null
         );
 
@@ -109,6 +111,7 @@ class UserServiceTest {
                 Set.of(Role.USER),
                 false,
                 LocalDateTime.now(),
+                null,
                 null
         );
         //then
@@ -131,6 +134,7 @@ class UserServiceTest {
                 Set.of(Role.USER),
                 false,
                 LocalDateTime.now(),
+                null,
                 null
         );
 
@@ -157,6 +161,7 @@ class UserServiceTest {
                 Set.of(Role.USER),
                 true,
                 LocalDateTime.now(),
+                null,
                 null
         );
 
@@ -184,6 +189,7 @@ class UserServiceTest {
                 Set.of(Role.USER),
                 true,
                 LocalDateTime.now(),
+                null,
                 null
         );
         UserVerificationCode code = new UserVerificationCode(
@@ -217,6 +223,7 @@ class UserServiceTest {
                 null,
                 false,
                 null,
+                null,
                 null
 
         );
@@ -229,6 +236,7 @@ class UserServiceTest {
                 Set.of(Role.USER),
                 true,
                 LocalDateTime.now(),
+                null,
                 null
 
         );
@@ -260,6 +268,7 @@ class UserServiceTest {
                 null,
                 false,
                 null,
+                null,
                 null
         );
         //then
@@ -282,6 +291,7 @@ class UserServiceTest {
                 null,
                 false,
                 null,
+                null,
                 null
         );
         User existedUser = new User(
@@ -292,6 +302,7 @@ class UserServiceTest {
                 "",
                 Set.of(Role.USER),
                 true,
+                null,
                 null,
                 null
         );
@@ -320,6 +331,7 @@ class UserServiceTest {
                 Set.of(Role.USER),
                 false,
                 null,
+                null,
                 null
         );
 
@@ -344,6 +356,7 @@ class UserServiceTest {
                 "password",
                 Set.of(Role.USER),
                 false,
+                null,
                 null,
                 null
         );
@@ -370,6 +383,7 @@ class UserServiceTest {
                 "somePassword",
                 Set.of(Role.USER),
                 true,
+                null,
                 null,
                 null
         );
@@ -415,6 +429,7 @@ class UserServiceTest {
                 "somePassword",
                 Set.of(Role.USER),
                 true,
+                null,
                 null,
                 null
         );
