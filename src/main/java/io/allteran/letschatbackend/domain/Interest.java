@@ -7,7 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document("interest")
 @Data
-@Schema(name = "Interest", description = "Display user's interest in general")
+@Schema(name = "Interest", description = "Backend entity. Display user's interest in general")
 public class Interest {
     @Id
     private String id;

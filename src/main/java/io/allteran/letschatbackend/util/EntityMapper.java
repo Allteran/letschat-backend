@@ -1,13 +1,7 @@
 package io.allteran.letschatbackend.util;
 
-import io.allteran.letschatbackend.domain.ChatCategory;
-import io.allteran.letschatbackend.domain.ChatChannel;
-import io.allteran.letschatbackend.domain.ChatLanguage;
-import io.allteran.letschatbackend.domain.User;
-import io.allteran.letschatbackend.dto.ChatCategoryDto;
-import io.allteran.letschatbackend.dto.ChatChannelDto;
-import io.allteran.letschatbackend.dto.ChatLanguageDto;
-import io.allteran.letschatbackend.dto.UserDto;
+import io.allteran.letschatbackend.domain.*;
+import io.allteran.letschatbackend.dto.*;
 import org.springframework.beans.BeanUtils;
 
 public class EntityMapper {
@@ -64,6 +58,12 @@ public class EntityMapper {
         ChatChannel e = new ChatChannel();
         BeanUtils.copyProperties(dto, e);
         return e;
+    }
+
+    public static InterestDto convertToDto(Interest e) {
+        InterestDto dto = new InterestDto();
+        BeanUtils.copyProperties(e, dto);
+        return dto;
     }
 
 }
