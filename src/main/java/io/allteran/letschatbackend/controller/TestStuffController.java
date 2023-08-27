@@ -39,32 +39,32 @@ public class TestStuffController {
         return ResponseEntity.ok(userService.createUser(user));
     }
 
-    @PostMapping("/indb")
-    public ResponseEntity<?> fillInterests() {
-        if(interestService.findAll().isEmpty()) {
-            interests().forEach(interestService::create);
-        }
-        return ResponseEntity.ok().build();
-    }
-    private List<Interest> interests() {
-        return Arrays.asList(
-                new Interest("Software"),
-                new Interest("Video games"),
-                new Interest("News"),
-                new Interest("Books"),
-                new Interest("Music"),
-                new Interest("Fashion"),
-                new Interest("Relationships"),
-                new Interest("Education"),
-                new Interest("Finance"),
-                new Interest("Movies"),
-                new Interest("Children"),
-                new Interest("Science"),
-                new Interest("Art"),
-                new Interest("Food"),
-                new Interest("Travel"),
-                new Interest("Psychology")
-        );
-    }
+//    @PostMapping("/indb")
+//    public ResponseEntity<?> fillInterests() {
+//        if(interestService.findAll().isEmpty()) {
+//            interests().forEach(interestService::create);
+//        }
+//        return ResponseEntity.ok().build();
+//    }
+//    private List<Interest> interests() {
+//        return Arrays.asList(
+//                new Interest("Software"),
+//                new Interest("Video games"),
+//                new Interest("News"),
+//                new Interest("Books"),
+//                new Interest("Music"),
+//                new Interest("Fashion"),
+//                new Interest("Relationships"),
+//                new Interest("Education"),
+//                new Interest("Finance"),
+//                new Interest("Movies"),
+//                new Interest("Children"),
+//                new Interest("Science"),
+//                new Interest("Art"),
+//                new Interest("Food"),
+//                new Interest("Travel"),
+//                new Interest("Psychology")
+//        );
+//    }
 
 }
