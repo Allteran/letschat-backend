@@ -19,13 +19,13 @@ public class SecurityConfig {
     private String ALLOWED_ORIGIN;
 
     public static final String[] ENDPOINTS_WHITELIST = {
+            "swagger-doc/**",
+            "/favicon.ico",
             "/api/v1/static/images/**",
+            "/api/v1/interest/",
             "/auth/**",
             "/api-docs/**",
-            "swagger-doc/**",
             "/forgot-password/**",
-            "/favicon.ico",
-            "api/v1/interest/"
     };
 
     public static final String[] ENDPOINTS_ADMIN = {
