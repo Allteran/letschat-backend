@@ -33,4 +33,4 @@ jobs:
       - name: Delete all containers
         run: docker rm -f lcbe-container
       - name: Run in docker-container
-        run: docker run -d -p 8686:8686 --name lcbe-container allteran/letchat-backend:latest
+        run: docker run -d -p 8686:8686 --name lcbe-container allteran/letschat-backend:latest
