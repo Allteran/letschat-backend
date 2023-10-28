@@ -1,0 +1,36 @@
+name: aws-cicd
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3'
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Build Project
+        run: mvn clean install -DskipTests
+      - name: Login to Dockerhub
+        run: docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
+      - name: Build docker image
+        run: docker build -t allteran/letschat-backend .
+      - name: Publish image to the Dockerhub
+        run: docker push allteran/letschat-backend:latest
+
+  deploy:
+    needs: build
+    runs-on: [aws-ec2-lcbe]
+    steps:
+      - name: Pull image from Dockerhub
+        run: docker pull allteran/letchat-backend:latest
+      - name: Delete all containers
+        run: docker rm -f lcbe-container
+      - name: Run in docker-container
+        run: docker run -d -p 8686:8686 --name lcbe-container allteran/letchat-backend:latest
