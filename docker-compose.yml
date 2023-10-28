@@ -1,20 +1,20 @@
-version: '3'
-
-services:
-  letschat_backend:
-    container_name: 'lc_backend_api'
-    image: 'allteran/letschat-backend:v.0.1'
-    ports:
-      - 8200:8200
-    depends_on:
-      - mongodb
-
-  mongodb:
-    container_name: 'mongo_db'
-    restart: on-failure
-    image: mongo:latest
-    ports:
-        - 27017:27017
-    volumes:
-      - ~/mongodata:/data/db
-#      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo-js:ro
+#version: '3'
+#
+#services:
+#  letschat_backend:
+#    container_name: 'lc_backend_api'
+#    image: 'allteran/letschat-backend:v.0.1'
+#    ports:
+#      - 8200:8200
+#    depends_on:
+#      - mongodb
+#
+#  mongodb:
+#    container_name: 'mongo_db'
+#    restart: on-failure
+#    image: mongo:latest
+#    ports:
+#        - 27017:27017
+#    volumes:
+#      - ~/mongodata:/data/db
+##      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo-js:ro

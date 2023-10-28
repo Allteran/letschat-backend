@@ -29,7 +29,7 @@ jobs:
     runs-on: [aws-ec2-lcbe]
     steps:
       - name: Pull image from Dockerhub
-        run: docker pull allteran/letchat-backend:latest
+        run: docker pull allteran/letschat-backend:latest
       - name: Delete all containers
         run: docker rm -f lcbe-container
       - name: Run in docker-container
