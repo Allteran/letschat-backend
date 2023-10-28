@@ -28,6 +28,8 @@ jobs:
     needs: build
     runs-on: [aws-ec2-lcbe]
     steps:
+      - name: Login to Dockerhub
+        run: sudo docker login -u ${{secrets.DOCKER_USERNAME}} -p ${{secrets.DOCKER_PASSWORD}}
       - name: Pull image from Dockerhub
         run: sudo docker pull allteran/letschat-backend:latest
       - name: Delete all containers
