@@ -35,4 +35,4 @@ jobs:
       - name: Delete all containers
         run: sudo docker rm -f lcbe-container
       - name: Run in docker-container
-        run: sudo docker run -d -p 8686:8686 --name lcbe-container allteran/letschat-backend:latest
+        run: sudo docker run -d -p 8686:8686 -e DATABASE_URI=${{secrets.DATABASE_URI}} --name lcbe-container allteran/letschat-backend:latest
