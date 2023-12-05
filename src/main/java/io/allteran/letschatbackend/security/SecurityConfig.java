@@ -25,7 +25,7 @@ public class SecurityConfig {
             "/api/v1/interest/",
             "/auth/**",
             "/api-docs/**",
-            "/forgot-password/**",
+            "/forgot-password/**"
     };
 
     public static final String[] ENDPOINTS_ADMIN = {
