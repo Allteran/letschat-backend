@@ -12,14 +12,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,8 +25,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/chat-category")
 @RequiredArgsConstructor
+@Slf4j
 public class ChatCategoryController {
     private final ChatCategoryService categoryService;
+
     @SneakyThrows
     @Operation(summary = "Get all ChatCategory")
     @ApiResponses(value = {
@@ -69,7 +69,7 @@ public class ChatCategoryController {
             );
             return ResponseEntity.ok(new GeneralResponse<>("SUCCESS", Collections.singletonList(createdDto)));
         } catch (EntityFieldException ex) {
-            ex.printStackTrace();
+            log.error("Can't create new Chat category", ex);
             return ResponseEntity.status(400).body(new GeneralResponse<>(ex.getMessage(), Collections.emptyList()));
         }
     }
