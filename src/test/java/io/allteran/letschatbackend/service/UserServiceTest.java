@@ -53,6 +53,7 @@ class UserServiceTest {
                 true,
                 null,
                 null,
+                null,
                 null
         );
         String rawPassword = givenUser.getPassword();
@@ -88,6 +89,7 @@ class UserServiceTest {
                 false,
                 LocalDateTime.now(),
                 null,
+                null,
                 null
         );
 
@@ -112,6 +114,7 @@ class UserServiceTest {
                 false,
                 LocalDateTime.now(),
                 null,
+                null,
                 null
         );
         //then
@@ -134,6 +137,7 @@ class UserServiceTest {
                 Set.of(Role.USER),
                 false,
                 LocalDateTime.now(),
+                null,
                 null,
                 null
         );
@@ -162,6 +166,7 @@ class UserServiceTest {
                 true,
                 LocalDateTime.now(),
                 null,
+                null,
                 null
         );
 
@@ -189,6 +194,7 @@ class UserServiceTest {
                 Set.of(Role.USER),
                 true,
                 LocalDateTime.now(),
+                null,
                 null,
                 null
         );
@@ -224,6 +230,7 @@ class UserServiceTest {
                 false,
                 null,
                 null,
+                null,
                 null
 
         );
@@ -236,6 +243,7 @@ class UserServiceTest {
                 Set.of(Role.USER),
                 true,
                 LocalDateTime.now(),
+                null,
                 null,
                 null
 
@@ -269,6 +277,7 @@ class UserServiceTest {
                 false,
                 null,
                 null,
+                null,
                 null
         );
         //then
@@ -292,6 +301,7 @@ class UserServiceTest {
                 false,
                 null,
                 null,
+                null,
                 null
         );
         User existedUser = new User(
@@ -302,6 +312,7 @@ class UserServiceTest {
                 "",
                 Set.of(Role.USER),
                 true,
+                null,
                 null,
                 null,
                 null
@@ -332,6 +343,7 @@ class UserServiceTest {
                 false,
                 null,
                 null,
+                null,
                 null
         );
 
@@ -356,6 +368,7 @@ class UserServiceTest {
                 "password",
                 Set.of(Role.USER),
                 false,
+                null,
                 null,
                 null,
                 null
@@ -383,6 +396,7 @@ class UserServiceTest {
                 "somePassword",
                 Set.of(Role.USER),
                 true,
+                null,
                 null,
                 null,
                 null
@@ -429,6 +443,7 @@ class UserServiceTest {
                 "somePassword",
                 Set.of(Role.USER),
                 true,
+                null,
                 null,
                 null,
                 null
