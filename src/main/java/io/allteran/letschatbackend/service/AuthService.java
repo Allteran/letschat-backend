@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -59,13 +60,13 @@ public class AuthService {
 
     public AuthResponse login(AuthRequest request) {
         User user = userService.findByEmail(request.getLogin());
-        if(user == null) {
+        if (user == null) {
             return new AuthResponse(request.getLogin(), null, null, MESSAGE_AUTH_FAILED, AuthResponse.Status.AUTH_FAILED);
         }
-        if(!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return new AuthResponse(request.getLogin(), null, null, MESSAGE_AUTH_FAILED, AuthResponse.Status.AUTH_FAILED);
         }
-        if(!user.isActive()) {
+        if (!user.isActive()) {
             return new AuthResponse(request.getLogin(), null, null, MESSAGE_AUTH_UNVERIFIED, AuthResponse.Status.USER_STATE_ERROR);
         }
 
@@ -75,7 +76,7 @@ public class AuthService {
 
     public AuthResponse loginWithGoogle(AuthRequest request) {
         User user = userService.findByEmail(request.getLogin());
-        if(user == null) {
+        if (user == null) {
             return new AuthResponse(request.getLogin(), null, null, MESSAGE_AUTH_FAILED, AuthResponse.Status.AUTH_FAILED);
         }
         var token = jwtUtil.generateToken(user);
@@ -124,10 +125,10 @@ public class AuthService {
     @Transactional
     public AuthResponse completeRegistration(CompleteRegistrationRequest request) {
         Optional<ChatLanguage> lanOp = languageService.findById(request.getLanguageId());
-        if(lanOp.isEmpty()) {
-            return new AuthResponse(request.getLogin(),request.getName(), null, MESSAGE_NO_LANGUAGE, AuthResponse.Status.USER_FILED_ERROR);
+        if (lanOp.isEmpty()) {
+            return new AuthResponse(request.getLogin(), request.getName(), null, MESSAGE_NO_LANGUAGE, AuthResponse.Status.USER_FILED_ERROR);
         }
-        List<Interest> interests = new java.util.ArrayList<>(request.getInterests().stream()
+        List<Interest> interests = new ArrayList<>(request.getInterests().stream()
                 .map(s -> {
                     Optional<Interest> iop = interestService.findById(s);
                     if (iop.isEmpty()) {
@@ -137,7 +138,7 @@ public class AuthService {
                     return iop.get();
                 }).toList());
         interests.removeAll(Collections.singleton(null));
-        if(interests.isEmpty()) {
+        if (interests.isEmpty()) {
             return new AuthResponse(request.getLogin(), request.getName(), null, MESSAGE_NO_INTERESTS, AuthResponse.Status.USER_FILED_ERROR);
         }
         ChatLanguage language = lanOp.get();
@@ -154,7 +155,7 @@ public class AuthService {
             message = ex.getMessage();
             status = AuthResponse.Status.USER_FILED_ERROR;
         }
-        return new AuthResponse(request.getLogin(), request.getName(), null, message,status);
+        return new AuthResponse(request.getLogin(), request.getName(), null, message, status);
     }
 
     public UserVerificationResponse resendVerificationCode(String email, String username) {

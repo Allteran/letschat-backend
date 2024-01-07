@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
@@ -14,9 +15,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Document(value = "chat_user")
@@ -42,6 +45,7 @@ public class User implements UserDetails {
     @Schema(description = "Stores user image ID with format that. File stores on static DB S3")
     private String userImage;
     private ChatLanguage language;
+    private List<Interest> interests;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

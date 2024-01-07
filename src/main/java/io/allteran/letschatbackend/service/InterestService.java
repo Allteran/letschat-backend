@@ -1,6 +1,7 @@
 package io.allteran.letschatbackend.service;
 
 import io.allteran.letschatbackend.domain.Interest;
+import io.allteran.letschatbackend.exception.EntityFieldException;
 import io.allteran.letschatbackend.repo.InterestRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.DependsOn;
@@ -24,6 +25,13 @@ public class InterestService {
     }
 
     public Interest create(Interest i) {
+        if (repo.findByName(i.getName()).isPresent()) {
+            throw new EntityFieldException(String.format("Interest with name [%s] is already exist", i.getName()));
+        }
         return repo.save(i);
+    }
+
+    public Optional<Interest> find(Interest interest) {
+        return repo.findByIdOrName(interest.getId(), interest.getName());
     }
 }

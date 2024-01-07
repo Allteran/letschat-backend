@@ -4,12 +4,15 @@ import io.allteran.letschatbackend.domain.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Data
+@Builder
 @Schema(description = "DTO. Entity uses to interact between backend and frontend")
 public class UserDto {
     private String id;
@@ -29,4 +32,6 @@ public class UserDto {
     private LocalDateTime creationDate;
     @Schema(description = "Stores link to user image. File stores on static DB S3")
     private String userImage;
+    private ChatLanguageDto language;
+    private List<InterestDto> interests;
 }

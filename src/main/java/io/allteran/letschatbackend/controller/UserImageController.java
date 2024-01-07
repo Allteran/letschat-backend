@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,13 +48,9 @@ public class UserImageController {
             )
     })
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadUserImage(@RequestParam("userId") String userId, @RequestParam("file")MultipartFile image) {
-        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if(!currentUser.getId().equals(userId)) {
-            return ResponseEntity.status(401).body("UNAUTHORIZED");
-        }
+    public ResponseEntity<String> uploadUserImage(@AuthenticationPrincipal User currentUser, @RequestParam("file")MultipartFile image) {
         try {
-            boolean fileUploaded = userImageService.saveUserImage(userId, image);
+            boolean fileUploaded = userImageService.saveUserImage(currentUser.getId(), image);
             String message = (fileUploaded) ? "OK": "Failed. Check logs";
             return ResponseEntity.ok(message);
         } catch (InternalException e) {
