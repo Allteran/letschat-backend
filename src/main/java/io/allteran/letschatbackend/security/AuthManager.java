@@ -4,6 +4,7 @@ import io.allteran.letschatbackend.domain.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.Set;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class AuthManager implements AuthenticationManager {
     private final JwtUtil jwtUtil;
@@ -25,7 +27,7 @@ public class AuthManager implements AuthenticationManager {
             username = jwtUtil.extractUsername(token);
         } catch (JwtException jwtException) {
             username = null;
-            jwtException.printStackTrace();
+            log.error("Authenticate: JWT Exception", jwtException);
         }
 
         if(username != null && jwtUtil.validateToken(token)) {
