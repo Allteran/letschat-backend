@@ -2,7 +2,7 @@ name: Google Cloud Run CICD
 
 on:
   push:
-    branches: [ "gcloud" ]
+    branches: [ "develop" ]
 
 env:
   PROJECT_ID: lcbe-412409
