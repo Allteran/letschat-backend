@@ -14,6 +14,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     private String URL_FRONTEND;
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**").allowedOrigins(URL_FRONTEND);
+        registry.addMapping("/**")
+                .allowedOrigins(URL_FRONTEND)
+                .allowedHeaders("*")
+                .allowedMethods("*");
     }
 }
