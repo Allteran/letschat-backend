@@ -38,6 +38,12 @@ public class SecurityConfig {
             "/forgot-password/**"
     };
 
+    public static final String[] ENDPOINTS_START_PAGE = {
+            "/api/v1/chat-channel/public",
+            "/api/v1/chat-category",
+            "/api/v1/chat-language"
+    };
+
     public static final String[] ENDPOINTS_ADMIN = {
             "/api/v1/*/protected/**"
     };
@@ -72,6 +78,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authz) ->
                         authz.requestMatchers(ENDPOINTS_WHITELIST).permitAll()
                                 .requestMatchers(ENDPOINTS_ADMIN).hasAuthority(Role.ADMIN.getAuthority())
+                                .requestMatchers(ENDPOINTS_START_PAGE).hasAnyAuthority(Role.USER.getAuthority(),
+                                        Role.PREAUTHORIZED.getAuthority(), Role.ADMIN.getAuthority())
                                 .anyRequest().hasAuthority(Role.USER.getAuthority()))
                 .authenticationManager(authManager);
         return httpSecurity.build();
