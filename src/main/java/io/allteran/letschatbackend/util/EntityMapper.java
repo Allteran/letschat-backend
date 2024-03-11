@@ -3,24 +3,22 @@ package io.allteran.letschatbackend.util;
 import io.allteran.letschatbackend.domain.ChatCategory;
 import io.allteran.letschatbackend.domain.ChatChannel;
 import io.allteran.letschatbackend.domain.ChatLanguage;
-import io.allteran.letschatbackend.domain.User;
 import io.allteran.letschatbackend.dto.ChatCategoryDto;
 import io.allteran.letschatbackend.dto.ChatChannelDto;
 import io.allteran.letschatbackend.dto.ChatLanguageDto;
-import io.allteran.letschatbackend.dto.UserDto;
 import org.springframework.beans.BeanUtils;
 
 public class EntityMapper {
 
-    public static User convertToEntity(UserDto dto, String imageBaseUrl) {
-        User e = new User();
-        BeanUtils.copyProperties(dto, e, "userImage");
-        if (dto.getUserImage() != null && imageBaseUrl != null) {
-            String imageId = dto.getUserImage().replace(imageBaseUrl, "");
-            e.setUserImage(imageId);
-        }
-        return e;
-    }
+//    public static User convertToEntity(UserDto dto, String imageBaseUrl) {
+//        User e = new User();
+//        BeanUtils.copyProperties(dto, e, "userImage");
+//        if (dto.getUserImage() != null && imageBaseUrl != null) {
+//            String imageId = dto.getUserImage().replace(imageBaseUrl, "");
+//            e.setUserImage(imageId);
+//        }
+//        return e;
+//    }
 
     public static ChatCategory convertToEntity(ChatCategoryDto dto) {
         ChatCategory e = new ChatCategory();

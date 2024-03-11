@@ -155,4 +155,28 @@ public class ChatChannelController {
         }
     }
 
+    @Operation(summary = "Get count of subscribed user for mentioned chat channel")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Subscriber count fetched successfully",
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = Long.class))},
+                    headers = {@Header(name = "Authorization", required = true, description = "Required authorization with Bearer token (JWT)")}
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Fail. ChatChannel not found with given ID",
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE, schema = @Schema(implementation = GeneralResponse.class))},
+                    headers = {@Header(name = "Authorization", required = true, description = "Required authorization with Bearer token (JWT)")}
+            )    })
+    @GetMapping("/public/count/{id}")
+    public ResponseEntity<?> countSubscribers(@PathVariable("id") String channelId) {
+        try {
+            Long count = channelService.countSubscribers(channelId);
+            return ResponseEntity.ok(count);
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(404).body(new GeneralResponse<>(e.getMessage(), Collections.emptyList()));
+        }
+    }
+
 }

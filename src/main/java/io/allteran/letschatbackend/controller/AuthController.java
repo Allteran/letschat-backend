@@ -1,9 +1,10 @@
 package io.allteran.letschatbackend.controller;
 
-import io.allteran.letschatbackend.dto.*;
+import io.allteran.letschatbackend.converter.Converter;
+import io.allteran.letschatbackend.domain.User;
+import io.allteran.letschatbackend.dto.UserSignUpDto;
 import io.allteran.letschatbackend.dto.payload.*;
 import io.allteran.letschatbackend.service.AuthService;
-import io.allteran.letschatbackend.util.EntityMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,6 +27,8 @@ public class AuthController {
     private String MESSAGE_TOKEN_VALID;
     @Value("${message.token.invalid}")
     private String MESSAGE_TOKEN_INVALID;
+
+    private final Converter<UserSignUpDto, User> userSignUpConverter;
 
     @Operation(summary = "Login existing user", description = "Current method implements user login behaviour and gives AuthResponse based on password. For better understanding, please check AuthResponse.Status entity")
     @PostMapping("/login")
@@ -59,8 +62,8 @@ public class AuthController {
             )
     })
     @PostMapping("/signUp")
-    public ResponseEntity<AuthResponse> singUp(@RequestBody UserDto body) {
-       return ResponseEntity.ok(authService.registerUser(EntityMapper.convertToEntity(body, null)));
+    public ResponseEntity<AuthResponse> singUp(@RequestBody UserSignUpDto body) {
+        return ResponseEntity.ok(authService.registerUser(userSignUpConverter.convertToEntity(body)));
     }
 
     @ApiResponses(value = {
@@ -132,8 +135,8 @@ public class AuthController {
             )
     })
     @PostMapping("/google/signUp")
-    public ResponseEntity<AuthResponse> googleRegister(@RequestBody UserDto body) {
-        return ResponseEntity.ok(authService.registerWithGoogle(EntityMapper.convertToEntity(body, null)));
+    public ResponseEntity<AuthResponse> googleRegister(@RequestBody UserSignUpDto body) {
+        return ResponseEntity.ok(authService.registerWithGoogle(userSignUpConverter.convertToEntity(body)));
     }
 
     @Operation(summary = "Login with Google Account", description = "WILL BE DEPRECATED SOON")
@@ -141,7 +144,6 @@ public class AuthController {
     public ResponseEntity<AuthResponse> googleLogin(@RequestBody AuthRequest request) {
         return ResponseEntity.ok(authService.loginWithGoogle(request));
     }
-
 
 
 }

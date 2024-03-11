@@ -32,7 +32,8 @@ public class UserConverter implements Converter<UserDto, User> {
                 .creationDate(user.getCreationDate())
                 .roles(user.getRoles())
                 .userImage(user.getUserImage())
-//                .interests()
+                .joinedChannels(user.getJoinedChannels())
+//                .interests(user.getInterests())
 //                .password()
 //                .language()
                 .build();

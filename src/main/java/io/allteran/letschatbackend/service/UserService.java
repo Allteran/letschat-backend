@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -224,5 +225,20 @@ public class UserService implements UserDetailsService {
         userFromDb.setPassword(passwordEncoder.encode(request.getNewPassword()));
         return true;
     }
+
+
+    @Transactional
+    public void addJoinedChannel(String userId, String channelId) {
+        Optional<User> user = repo.findById(userId);
+        if(user.isEmpty()) {
+            throw new NotFoundException("Can't find user with id [{}]", userId);
+        }
+        Set<String> joinedChannels = user.get().getJoinedChannels();
+        if(joinedChannels == null) {
+            joinedChannels = new HashSet<>();
+        }
+        joinedChannels.add(channelId);
+    }
+
 
 }

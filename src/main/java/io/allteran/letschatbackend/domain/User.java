@@ -46,6 +46,8 @@ public class User implements UserDetails {
     private String userImage;
     private ChatLanguage language;
     private List<Interest> interests;
+    @Schema(description = "List of IDs for joined channels of current user")
+    private Set<String> joinedChannels;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
