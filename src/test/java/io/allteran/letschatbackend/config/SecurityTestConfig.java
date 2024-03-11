@@ -47,6 +47,7 @@ public class SecurityTestConfig {
                     true, LocalDateTime.now(),
                     null,
                     null,
+                    null,
                     null
             );
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
